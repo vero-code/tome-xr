@@ -53,6 +53,14 @@
       "transform": {
         "position": [0, 0, -0.55]
       },
+      "components": {
+        "HarborEnvironment": {
+          "windSpeed": 0.35,
+          "windDirectionDeg": -75,
+          "currentSpeed": 0.15,
+          "currentDirectionDeg": 0
+        }
+      },
       "children": [
         {
           "id": "fender-left",
@@ -113,6 +121,17 @@
           "transform": {
             "position": [-0.16, 0.747, 0.11],
             "rotationDeg": [0, 18, 0]
+          },
+          "components": {
+            "VesselBody": {
+              "vx": 0.024,
+              "vz": -0.015,
+              "omega": 0,
+              "tugForceX": 0,
+              "tugForceZ": 0,
+              "tugTorque": 0,
+              "active": true
+            }
           }
         }
       ]
