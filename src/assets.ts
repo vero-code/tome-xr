@@ -8,6 +8,7 @@ import {
 import { createCargoVessel } from './scene-assets/vessel.scene-asset.js';
 import { createDriftTrajectory } from './scene-assets/trajectory.scene-asset.js';
 import { createTugboat } from './scene-assets/tugboat.scene-asset.js';
+import { createWeatherDial, createSimToggleButton } from './scene-assets/controls.scene-asset.js';
 
 const publicAssetUrl = (filePath: string): string =>
   `${import.meta.env.BASE_URL}${filePath.replace(/^\/+/u, '')}`;
@@ -27,4 +28,6 @@ export default defineAssets({
   'welcome-panel': uikitml('welcome.uikitml', 'Welcome Panel'),
   'drift-trajectory': createDriftTrajectory(),
   'tugboat': createTugboat(),
+  'weather-dial': createWeatherDial(),
+  'sim-toggle-button': createSimToggleButton(),
 });
