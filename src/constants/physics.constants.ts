@@ -3,6 +3,7 @@ import type {
   TrajectoryConfig,
   VesselPhysicsParams,
 } from '../types/physics.types.js';
+import { VESSEL_CONFIG } from './table.constants.js';
 
 export const VESSEL_PHYSICS: VesselPhysicsParams = {
   mass: 12.0,
@@ -13,6 +14,8 @@ export const VESSEL_PHYSICS: VesselPhysicsParams = {
   windForceCoeff: 0.009,
   currentForceCoeff: 0.014,
   weathervaneTorqueCoeff: 0.004,
+  hullHalfLength: VESSEL_CONFIG.length / 2,
+  hullHalfBeam: VESSEL_CONFIG.beam / 2,
 };
 
 export const BASIN_BOUNDS: BasinBounds = {
@@ -22,6 +25,7 @@ export const BASIN_BOUNDS: BasinBounds = {
   maxZ: 0.21,
   waterSurfaceY: 0.747,
   restitution: 0.15,
+  pierFaceZ: -0.135,
 };
 
 export const MAX_SIMULATION_DT = 0.05;

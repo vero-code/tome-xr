@@ -1,55 +1,38 @@
-import {
-  Color,
-  createSystem,
-  Mesh,
-  MeshStandardMaterial,
-} from '@iwsdk/core';
-import { FENDER_CONFIG_THRESHOLDS } from '../constants/telemetry.constants.js';
+import { Color, createSystem, type Entity, Mesh } from '@iwsdk/core';
+import { MAX_SIMULATION_DT } from '../constants/physics.constants.js';
 import { VESSEL_CONFIG } from '../constants/table.constants.js';
+import { FENDER_CONFIG_THRESHOLDS } from '../constants/telemetry.constants.js';
 import { FenderContact } from '../entities/fender.component.js';
 import { VesselBody } from '../entities/vessel.component.js';
+import type { FenderRuntimeState } from '../types/telemetry.types.js';
 
 export class FenderContactSystem extends createSystem({
   fenders: { required: [FenderContact] },
   vessels: { required: [VesselBody] },
 }) {
-  private idleColor!: Color;
-  private safeColor!: Color;
-  private warnColor!: Color;
-  private crashColor!: Color;
+  private idleColor = new Color(FENDER_CONFIG_THRESHOLDS.idleColor);
+  private safeColor = new Color(FENDER_CONFIG_THRESHOLDS.safeColor);
+  private warnColor = new Color(FENDER_CONFIG_THRESHOLDS.warnColor);
+  private crashColor = new Color(FENDER_CONFIG_THRESHOLDS.crashColor);
 
-  init(): void {
-    this.idleColor = new Color(FENDER_CONFIG_THRESHOLDS.idleColor);
-    this.safeColor = new Color(FENDER_CONFIG_THRESHOLDS.safeColor);
-    this.warnColor = new Color(FENDER_CONFIG_THRESHOLDS.warnColor);
-    this.crashColor = new Color(FENDER_CONFIG_THRESHOLDS.crashColor);
+  private states = new Map<Entity, FenderRuntimeState>();
+  private prevShipZ = 0;
+  private hasPrev = false;
+  private approachSpeed = 0;
 
-    // Clone material per fender for independent color states
-    const sub = this.queries.fenders.subscribe('qualify', (fender) => {
-      const mesh = fender.object3D?.children[0];
-      if (mesh instanceof Mesh && mesh.material instanceof MeshStandardMaterial) {
-        mesh.material = mesh.material.clone();
-        mesh.material.color.copy(this.idleColor);
-      }
-    });
-    this.cleanupFuncs.push(sub);
-  }
-
-  update(): void {
-    const vessel = this.getPrimaryVessel();
-    if (vessel == null || vessel.object3D == null) {
+  update(delta: number): void {
+    const shipObj = this.getPrimaryVessel()?.object3D;
+    if (shipObj == null) {
       return;
     }
 
-    const shipObj = vessel.object3D;
+    const dt = Math.max(0.001, Math.min(delta, MAX_SIMULATION_DT));
     const shipX = shipObj.position.x;
     const shipZ = shipObj.position.z;
-    const heading = shipObj.rotation.y;
-    const vz = vessel.getValue(VesselBody, 'vz') ?? 0;
-    const approachSpeed = -vz;
+    this.updateApproachSpeed(shipZ, dt);
 
-    const cosH = Math.cos(heading);
-    const sinH = Math.sin(heading);
+    const cosH = Math.cos(shipObj.rotation.y);
+    const sinH = Math.sin(shipObj.rotation.y);
     const halfL = VESSEL_CONFIG.length / 2;
     const halfB = VESSEL_CONFIG.beam / 2;
 
@@ -58,38 +41,90 @@ export class FenderContactSystem extends createSystem({
       if (fenderObj == null) {
         continue;
       }
-
-      // Transform fender coordinates into vessel local space
-      const dx = fenderObj.position.x - shipX;
-      const dz = fenderObj.position.z - shipZ;
-      const localX = dx * cosH + dz * sinH;
-      const localZ = -dx * sinH + dz * cosH;
-
-      // Distance from fender center to vessel bounding box
-      const clampedX = Math.max(-halfL, Math.min(halfL, localX));
-      const clampedZ = Math.max(-halfB, Math.min(halfB, localZ));
-      const dist = Math.hypot(localX - clampedX, localZ - clampedZ);
-
-      const inContact = dist < FENDER_CONFIG_THRESHOLDS.contactDistance;
-      fender.setValue(FenderContact, 'inContact', inContact);
-      fender.setValue(FenderContact, 'impactSpeed', inContact ? approachSpeed : 0);
-
-      const mesh = fenderObj.children[0];
-      if (mesh instanceof Mesh && mesh.material instanceof MeshStandardMaterial) {
-        if (!inContact) {
-          mesh.material.color.copy(this.idleColor);
-        } else if (approachSpeed > FENDER_CONFIG_THRESHOLDS.crashSpeedMps) {
-          mesh.material.color.copy(this.crashColor);
-        } else if (approachSpeed > FENDER_CONFIG_THRESHOLDS.safeSpeedMps) {
-          mesh.material.color.copy(this.warnColor);
-        } else {
-          mesh.material.color.copy(this.safeColor);
-        }
+      const state = this.getState(fender);
+      if (state.color == null) {
+        continue;
       }
+
+      // Fender position in vessel local space
+      const relX = fenderObj.position.x - shipX;
+      const relZ = fenderObj.position.z - shipZ;
+      const localX = relX * cosH - relZ * sinH;
+      const localZ = relX * sinH + relZ * cosH;
+
+      // Distance from fender center to hull rectangle
+      const edgeX = Math.max(-halfL, Math.min(halfL, localX));
+      const edgeZ = Math.max(-halfB, Math.min(halfB, localZ));
+      const dist = Math.hypot(localX - edgeX, localZ - edgeZ);
+      const inContact = dist <= FENDER_CONFIG_THRESHOLDS.contactDistance;
+
+      if (inContact) {
+        state.impactSpeed = Math.max(state.impactSpeed, this.approachSpeed);
+        if (!state.wasInContact) {
+          console.log(
+            `[Fender ${fenderObj.name}] impact=${(state.impactSpeed * 100).toFixed(2)}cm/s`,
+          );
+        }
+      } else {
+        state.impactSpeed = 0;
+      }
+      state.wasInContact = inContact;
+
+      fender.setValue(FenderContact, 'inContact', inContact);
+      fender.setValue(FenderContact, 'impactSpeed', state.impactSpeed);
+      state.color.copy(
+        inContact ? this.pickColor(state.impactSpeed) : this.idleColor,
+      );
     }
   }
 
-  private getPrimaryVessel() {
+  // Smoothed speed toward the pier (negative Z), ignores sliding along it
+  private updateApproachSpeed(shipZ: number, dt: number): void {
+    if (this.hasPrev) {
+      const raw = Math.max(0, (this.prevShipZ - shipZ) / dt);
+      const k = Math.min(1, FENDER_CONFIG_THRESHOLDS.speedSmoothing * dt);
+      this.approachSpeed += (raw - this.approachSpeed) * k;
+    }
+    this.prevShipZ = shipZ;
+    this.hasPrev = true;
+  }
+
+  private pickColor(speed: number): Color {
+    if (speed > FENDER_CONFIG_THRESHOLDS.crashSpeedMps) {
+      return this.crashColor;
+    }
+    if (speed > FENDER_CONFIG_THRESHOLDS.safeSpeedMps) {
+      return this.warnColor;
+    }
+    return this.safeColor;
+  }
+
+  private getState(fender: Entity): FenderRuntimeState {
+    let state = this.states.get(fender);
+    if (state == null) {
+      state = { color: this.cloneColor(fender), wasInContact: false, impactSpeed: 0 };
+      this.states.set(fender, state);
+    }
+    return state;
+  }
+
+  // Clone shared fender material once, return its color handle
+  private cloneColor(fender: Entity): Color | null {
+    let color: Color | null = null;
+    fender.object3D?.traverse((child) => {
+      if (color != null || !(child instanceof Mesh)) {
+        return;
+      }
+      const material = child.material.clone();
+      child.material = material;
+      if ('color' in material && material.color instanceof Color) {
+        color = material.color;
+      }
+    });
+    return color;
+  }
+
+  private getPrimaryVessel(): Entity | null {
     for (const vessel of this.queries.vessels.entities) {
       return vessel;
     }

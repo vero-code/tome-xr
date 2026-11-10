@@ -16,6 +16,8 @@ export interface VesselPhysicsParams {
   readonly windForceCoeff: number;
   readonly currentForceCoeff: number;
   readonly weathervaneTorqueCoeff: number;
+  readonly hullHalfLength: number;
+  readonly hullHalfBeam: number;
 }
 
 export interface EnvironmentForceState {
@@ -35,6 +37,7 @@ export interface BasinBounds {
   readonly maxZ: number;
   readonly waterSurfaceY: number;
   readonly restitution: number;
+  readonly pierFaceZ: number;
 }
 
 export interface TrajectoryConfig {

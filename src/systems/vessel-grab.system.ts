@@ -6,6 +6,7 @@ import {
 import {
   BASIN_BOUNDS,
   MAX_SIMULATION_DT,
+  VESSEL_PHYSICS,
 } from '../constants/physics.constants.js';
 import { TrackingGuard } from '../core/tracking-guard.js';
 import { VesselBody } from '../entities/vessel.component.js';
@@ -13,6 +14,7 @@ import type {
   FilteredVector2,
   VesselDragTracker,
 } from '../types/interaction.types.js';
+import { pierLimitZ } from '../core/hull-geometry.js';
 
 export class VesselGrabSystem extends createSystem({
   heldVessels: { required: [VesselBody, Grabbed] },
@@ -149,13 +151,20 @@ export class VesselGrabSystem extends createSystem({
           angleDiff * Math.min(1, VESSEL_GRAB_CONFIG.headingTurnSpeed * dt);
       }
 
+      const safeZ = Math.max(
+        clampedZ,
+        pierLimitZ(this.tracker.headingRad, VESSEL_PHYSICS, BASIN_BOUNDS.pierFaceZ),
+      );
+
       this.tracker.prevX = clampedX;
-      this.tracker.prevZ = clampedZ;
+      this.tracker.prevZ = safeZ;
 
       this.tracker.smoothedVx =
         Math.cos(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
       this.tracker.smoothedVz =
         -Math.sin(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
+
+      obj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, safeZ);
 
       obj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, clampedZ);
       obj.rotation.set(0, this.tracker.headingRad, 0);

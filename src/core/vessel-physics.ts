@@ -4,6 +4,7 @@ import type {
   VesselKinematicsState,
   VesselPhysicsParams,
 } from '../types/physics.types.js';
+import { pierLimitZ } from './hull-geometry.js';
 
 export class VesselPhysicsEngine {
   // Advances vessel 2D kinematics on water surface by dt seconds in place
@@ -83,8 +84,9 @@ export class VesselPhysicsEngine {
       if (state.vx > 0) state.vx = -state.vx * bounds.restitution;
     }
 
-    if (state.z < bounds.minZ) {
-      state.z = bounds.minZ;
+    const pierLimit = pierLimitZ(state.headingRad, params, bounds.pierFaceZ);
+    if (state.z < pierLimit) {
+      state.z = pierLimit;
       if (state.vz < 0) state.vz = -state.vz * bounds.restitution;
       state.omega *= 0.5;
     } else if (state.z > bounds.maxZ) {
