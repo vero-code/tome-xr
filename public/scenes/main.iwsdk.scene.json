@@ -133,6 +133,14 @@
               "active": true
             }
           }
+        },
+        {
+          "id": "drift-trajectory",
+          "name": "Drift Trajectory",
+          "content": {
+            "type": "asset",
+            "asset": "drift-trajectory"
+          }
         }
       ]
     },
