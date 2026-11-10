@@ -36,3 +36,16 @@ export interface BasinBounds {
   readonly waterSurfaceY: number;
   readonly restitution: number;
 }
+
+export interface TrajectoryConfig {
+  readonly sampleCount: number;
+  readonly subStepsPerSample: number;
+  readonly stepDt: number;
+  readonly markerY: number;
+}
+
+export interface TrajectoryBuffer {
+  readonly x: Float32Array;
+  readonly z: Float32Array;
+  readonly headingRad: Float32Array;
+}
