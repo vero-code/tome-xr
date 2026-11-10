@@ -7,6 +7,7 @@ import { TugboatSystem } from './systems/tugboat.system.js';
 import { VesselGrabSystem } from './systems/vessel-grab.system.js';
 import { VesselPhysicsSystem } from './systems/vessel-physics.system.js';
 import { LaserGuidesSystem } from './systems/laser-guides.system.js';
+import { FenderContactSystem } from './systems/fender-contact.system.js';
 
 World.create(
   document.getElementById('scene-container') as HTMLDivElement,
@@ -19,4 +20,5 @@ World.create(
   world.registerSystem(VesselPhysicsSystem);
   world.registerSystem(TrajectorySystem);
   world.registerSystem(LaserGuidesSystem);
+  world.registerSystem(FenderContactSystem);
 });

@@ -72,6 +72,9 @@
           },
           "transform": {
             "position": [-0.18, 0.756, -0.144]
+          },
+          "components": {
+            "FenderContact": {}
           }
         },
         {
@@ -84,6 +87,9 @@
           },
           "transform": {
             "position": [0, 0.756, -0.144]
+          },
+          "components": {
+            "FenderContact": {}
           }
         },
         {
@@ -96,6 +102,9 @@
           },
           "transform": {
             "position": [0.18, 0.756, -0.144]
+          },
+          "components": {
+            "FenderContact": {}
           }
         },
         {
