@@ -1,18 +1,18 @@
 import type {
   BasinBounds,
-  VesselPhysicsParams,
   TrajectoryConfig,
+  VesselPhysicsParams,
 } from '../types/physics.types.js';
 
 export const VESSEL_PHYSICS: VesselPhysicsParams = {
   mass: 12.0,
   momentOfInertia: 0.45,
-  linearDamping: 0.28,
-  lateralDragMultiplier: 2.6,
+  linearDamping: 0.04,
+  lateralDragMultiplier: 6.5,
   angularDamping: 0.9,
-  windForceCoeff: 0.08,
-  currentForceCoeff: 0.18,
-  weathervaneTorqueCoeff: 0.012,
+  windForceCoeff: 0.009,
+  currentForceCoeff: 0.014,
+  weathervaneTorqueCoeff: 0.004,
 };
 
 export const BASIN_BOUNDS: BasinBounds = {
@@ -27,10 +27,10 @@ export const BASIN_BOUNDS: BasinBounds = {
 export const MAX_SIMULATION_DT = 0.05;
 export const DEG_TO_RAD = Math.PI / 180;
 
-// 30 samples * 3 substeps * 0.5s = 45 seconds prediction horizon
+// 30 samples * 2 substeps * 0.5s = 30 seconds prediction horizon
 export const TRAJECTORY_CONFIG: TrajectoryConfig = {
   sampleCount: 30,
-  subStepsPerSample: 3,
+  subStepsPerSample: 2,
   stepDt: 0.5,
   markerY: 0.75,
 };

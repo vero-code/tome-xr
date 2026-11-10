@@ -16,6 +16,7 @@ export class VesselGrabSystem extends createSystem({
     this.tracker = {
       prevX: 0,
       prevZ: 0,
+      headingRad: 0,
       smoothedVx: 0,
       smoothedVz: 0,
       initialized: false,
@@ -34,17 +35,23 @@ export class VesselGrabSystem extends createSystem({
         BASIN_BOUNDS.maxZ,
         Math.max(BASIN_BOUNDS.minZ, obj.position.z),
       );
-      obj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, clampedZ);
-      obj.rotation.x = 0;
-      obj.rotation.z = 0;
-
       this.tracker.prevX = clampedX;
       this.tracker.prevZ = clampedZ;
+      this.tracker.headingRad = obj.rotation.y;
       this.tracker.smoothedVx =
-        Math.cos(obj.rotation.y) * VESSEL_GRAB_CONFIG.cruiseSpeed;
+        Math.cos(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
       this.tracker.smoothedVz =
-        -Math.sin(obj.rotation.y) * VESSEL_GRAB_CONFIG.cruiseSpeed;
+        -Math.sin(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
       this.tracker.initialized = true;
+    });
+
+    this.queries.heldVessels.subscribe('disqualify', (entity) => {
+      const obj = entity.object3D;
+      if (obj == null || !this.tracker.initialized) {
+        return;
+      }
+      obj.position.y = BASIN_BOUNDS.waterSurfaceY;
+      obj.rotation.set(0, this.tracker.headingRad, 0);
     });
   }
 
@@ -57,7 +64,6 @@ export class VesselGrabSystem extends createSystem({
         continue;
       }
 
-      // Clamp grabbed vessel to water surface and basin boundaries
       const clampedX = Math.min(
         BASIN_BOUNDS.maxX,
         Math.max(BASIN_BOUNDS.minX, obj.position.x),
@@ -67,12 +73,11 @@ export class VesselGrabSystem extends createSystem({
         Math.max(BASIN_BOUNDS.minZ, obj.position.z),
       );
       obj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, clampedZ);
-      obj.rotation.x = 0;
-      obj.rotation.z = 0;
 
       if (!this.tracker.initialized) {
         this.tracker.prevX = clampedX;
         this.tracker.prevZ = clampedZ;
+        this.tracker.headingRad = obj.rotation.y;
         this.tracker.initialized = true;
       }
 
@@ -88,21 +93,20 @@ export class VesselGrabSystem extends createSystem({
 
       const rawSpeed = Math.hypot(rawVx, rawVz);
       if (rawSpeed > VESSEL_GRAB_CONFIG.minDragSpeedForHeading) {
-        // Align vessel bow with hand drag direction
         const targetHeading = Math.atan2(-rawVz, rawVx);
         const angleDiff = Math.atan2(
-          Math.sin(targetHeading - obj.rotation.y),
-          Math.cos(targetHeading - obj.rotation.y),
+          Math.sin(targetHeading - this.tracker.headingRad),
+          Math.cos(targetHeading - this.tracker.headingRad),
         );
-        obj.rotation.y +=
+        this.tracker.headingRad +=
           angleDiff * Math.min(1, VESSEL_GRAB_CONFIG.headingTurnSpeed * dt);
 
         const clampedSpeed = Math.min(
           VESSEL_GRAB_CONFIG.maxLaunchSpeed,
           Math.max(VESSEL_GRAB_CONFIG.cruiseSpeed, rawSpeed),
         );
-        const targetVx = Math.cos(obj.rotation.y) * clampedSpeed;
-        const targetVz = -Math.sin(obj.rotation.y) * clampedSpeed;
+        const targetVx = Math.cos(this.tracker.headingRad) * clampedSpeed;
+        const targetVz = -Math.sin(this.tracker.headingRad) * clampedSpeed;
 
         const alpha = VESSEL_GRAB_CONFIG.velocitySmoothing;
         this.tracker.smoothedVx +=
@@ -110,12 +114,13 @@ export class VesselGrabSystem extends createSystem({
         this.tracker.smoothedVz +=
           (targetVz - this.tracker.smoothedVz) * alpha;
       } else {
-        // Maintain forward cruise vector along current vessel heading
         this.tracker.smoothedVx =
-          Math.cos(obj.rotation.y) * VESSEL_GRAB_CONFIG.cruiseSpeed;
+          Math.cos(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
         this.tracker.smoothedVz =
-          -Math.sin(obj.rotation.y) * VESSEL_GRAB_CONFIG.cruiseSpeed;
+          -Math.sin(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
       }
+
+      obj.rotation.set(0, this.tracker.headingRad, 0);
 
       entity.setValue(VesselBody, 'vx', this.tracker.smoothedVx);
       entity.setValue(VesselBody, 'vz', this.tracker.smoothedVz);

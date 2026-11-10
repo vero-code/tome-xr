@@ -1,10 +1,10 @@
 import type { VesselGrabConfig } from '../types/interaction.types.js';
 
 export const VESSEL_GRAB_CONFIG: VesselGrabConfig = {
-  cruiseSpeed: 0.022,
-  maxLaunchSpeed: 0.045,
-  dragVelocityScale: 0.35,
-  velocitySmoothing: 0.2,
-  minDragSpeedForHeading: 0.015,
-  headingTurnSpeed: 8.0,
+  cruiseSpeed: 0.018,
+  maxLaunchSpeed: 0.036,
+  dragVelocityScale: 0.45,
+  velocitySmoothing: 0.25,
+  minDragSpeedForHeading: 0.006,
+  headingTurnSpeed: 10.0,
 };

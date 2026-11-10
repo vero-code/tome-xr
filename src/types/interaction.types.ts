@@ -10,6 +10,7 @@ export interface VesselGrabConfig {
 export interface VesselDragTracker {
   prevX: number;
   prevZ: number;
+  headingRad: number;
   smoothedVx: number;
   smoothedVz: number;
   initialized: boolean;
