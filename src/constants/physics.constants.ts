@@ -1,6 +1,7 @@
 import type {
   BasinBounds,
   VesselPhysicsParams,
+  TrajectoryConfig,
 } from '../types/physics.types.js';
 
 export const VESSEL_PHYSICS: VesselPhysicsParams = {
@@ -25,3 +26,11 @@ export const BASIN_BOUNDS: BasinBounds = {
 
 export const MAX_SIMULATION_DT = 0.05;
 export const DEG_TO_RAD = Math.PI / 180;
+
+// 30 samples * 3 substeps * 0.5s = 45 seconds prediction horizon
+export const TRAJECTORY_CONFIG: TrajectoryConfig = {
+  sampleCount: 30,
+  subStepsPerSample: 3,
+  stepDt: 0.5,
+  markerY: 0.75,
+};
