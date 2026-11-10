@@ -5,6 +5,7 @@ import {
   MeshStandardMaterial,
 } from '@iwsdk/core';
 import { FENDER_CONFIG_THRESHOLDS } from '../constants/telemetry.constants.js';
+import { VESSEL_CONFIG } from '../constants/table.constants.js';
 import { FenderContact } from '../entities/fender.component.js';
 import { VesselBody } from '../entities/vessel.component.js';
 
@@ -23,14 +24,15 @@ export class FenderContactSystem extends createSystem({
     this.warnColor = new Color(FENDER_CONFIG_THRESHOLDS.warnColor);
     this.crashColor = new Color(FENDER_CONFIG_THRESHOLDS.crashColor);
 
-    // Give each fender mesh a cloned material instance for independent coloring
-    this.queries.fenders.subscribe('qualify', (fender) => {
+    // Clone material per fender for independent color states
+    const sub = this.queries.fenders.subscribe('qualify', (fender) => {
       const mesh = fender.object3D?.children[0];
       if (mesh instanceof Mesh && mesh.material instanceof MeshStandardMaterial) {
         mesh.material = mesh.material.clone();
         mesh.material.color.copy(this.idleColor);
       }
     });
+    this.cleanupFuncs.push(sub);
   }
 
   update(): void {
@@ -42,8 +44,14 @@ export class FenderContactSystem extends createSystem({
     const shipObj = vessel.object3D;
     const shipX = shipObj.position.x;
     const shipZ = shipObj.position.z;
+    const heading = shipObj.rotation.y;
     const vz = vessel.getValue(VesselBody, 'vz') ?? 0;
     const approachSpeed = -vz;
+
+    const cosH = Math.cos(heading);
+    const sinH = Math.sin(heading);
+    const halfL = VESSEL_CONFIG.length / 2;
+    const halfB = VESSEL_CONFIG.beam / 2;
 
     for (const fender of this.queries.fenders.entities) {
       const fenderObj = fender.object3D;
@@ -51,9 +59,16 @@ export class FenderContactSystem extends createSystem({
         continue;
       }
 
+      // Transform fender coordinates into vessel local space
       const dx = fenderObj.position.x - shipX;
       const dz = fenderObj.position.z - shipZ;
-      const dist = Math.hypot(dx, dz);
+      const localX = dx * cosH + dz * sinH;
+      const localZ = -dx * sinH + dz * cosH;
+
+      // Distance from fender center to vessel bounding box
+      const clampedX = Math.max(-halfL, Math.min(halfL, localX));
+      const clampedZ = Math.max(-halfB, Math.min(halfB, localZ));
+      const dist = Math.hypot(localX - clampedX, localZ - clampedZ);
 
       const inContact = dist < FENDER_CONFIG_THRESHOLDS.contactDistance;
       fender.setValue(FenderContact, 'inContact', inContact);

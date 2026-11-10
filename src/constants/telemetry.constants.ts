@@ -17,7 +17,7 @@ export const TELEMETRY_COLORS = {
 } as const;
 
 export const FENDER_CONFIG_THRESHOLDS: FenderContactConfig = {
-  contactDistance: 0.042,
+  contactDistance: 0.015,
   safeSpeedMps: 0.007,
   crashSpeedMps: 0.015,
   idleColor: '#38414A',

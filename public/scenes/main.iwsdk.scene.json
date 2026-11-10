@@ -1,306 +1,421 @@
 {
-  "version": "iwsdk.scene.v1",
-  "units": "meters",
   "components": {
     "com.iwsdk.components.DomeGradient": {
-      "sky": [0.06, 0.09, 0.14, 1],
-      "equator": [0.1, 0.15, 0.22, 1],
-      "ground": [0.05, 0.07, 0.1, 1],
-      "elevationDeg": 24,
       "azimuthDeg": -31,
-      "dither": true
+      "dither": true,
+      "elevationDeg": 24,
+      "equator": [
+        0.1,
+        0.15,
+        0.22,
+        1
+      ],
+      "ground": [
+        0.05,
+        0.07,
+        0.1,
+        1
+      ],
+      "sky": [
+        0.06,
+        0.09,
+        0.14,
+        1
+      ]
     },
     "com.iwsdk.components.IBLGradient": {
-      "sky": [0.5, 0.6, 0.75, 1],
-      "equator": [0.4, 0.48, 0.6, 1],
-      "ground": [0.2, 0.24, 0.3, 1],
-      "intensity": 0.35
+      "equator": [
+        0.4,
+        0.48,
+        0.6,
+        1
+      ],
+      "ground": [
+        0.2,
+        0.24,
+        0.3,
+        1
+      ],
+      "intensity": 0.35,
+      "sky": [
+        0.5,
+        0.6,
+        0.75,
+        1
+      ]
     }
   },
   "environment": {
-    "toneMapping": "aces",
     "exposure": 1.1,
+    "shadowMapType": "pcf",
     "shadows": true,
-    "shadowMapType": "pcf"
+    "toneMapping": "aces"
   },
-  "resources": {},
   "nodes": [
     {
-      "id": "bridge-floor",
-      "name": "Bridge Floor",
-      "framingRole": "support",
-      "content": {
-        "type": "asset",
-        "asset": "bridge-floor",
-        "receiveShadow": true
-      },
       "components": {
         "DomeFade": {
-          "start": 4,
-          "end": 10
+          "end": 10,
+          "start": 4
         }
-      }
+      },
+      "content": {
+        "asset": "bridge-floor",
+        "receiveShadow": true,
+        "type": "asset"
+      },
+      "framingRole": "support",
+      "id": "bridge-floor",
+      "name": "Bridge Floor"
     },
     {
-      "id": "harbor-table",
-      "name": "Harbor Table",
-      "content": {
-        "type": "asset",
-        "asset": "harbor-table",
-        "castShadow": true,
-        "receiveShadow": true
-      },
-      "transform": {
-        "position": [0, 0, -0.55]
-      },
-      "components": {
-        "HarborEnvironment": {
-          "windSpeed": 0.35,
-          "windDirectionDeg": -75,
-          "currentSpeed": 0.15,
-          "currentDirectionDeg": 0
-        }
-      },
       "children": [
         {
+          "components": {
+            "FenderContact": {}
+          },
+          "content": {
+            "asset": "pier-fender",
+            "castShadow": true,
+            "type": "asset"
+          },
           "id": "fender-left",
           "name": "Fender Left",
-          "content": {
-            "type": "asset",
-            "asset": "pier-fender",
-            "castShadow": true
-          },
           "transform": {
-            "position": [-0.18, 0.756, -0.144]
-          },
-          "components": {
-            "FenderContact": {}
+            "position": [
+              -0.18,
+              0.756,
+              -0.144
+            ]
           }
         },
         {
+          "components": {
+            "FenderContact": {}
+          },
+          "content": {
+            "asset": "pier-fender",
+            "castShadow": true,
+            "type": "asset"
+          },
           "id": "fender-center",
           "name": "Fender Center",
-          "content": {
-            "type": "asset",
-            "asset": "pier-fender",
-            "castShadow": true
-          },
           "transform": {
-            "position": [0, 0.756, -0.144]
-          },
-          "components": {
-            "FenderContact": {}
+            "position": [
+              0,
+              0.756,
+              -0.144
+            ]
           }
         },
         {
+          "components": {
+            "FenderContact": {}
+          },
+          "content": {
+            "asset": "pier-fender",
+            "castShadow": true,
+            "type": "asset"
+          },
           "id": "fender-right",
           "name": "Fender Right",
-          "content": {
-            "type": "asset",
-            "asset": "pier-fender",
-            "castShadow": true
-          },
           "transform": {
-            "position": [0.18, 0.756, -0.144]
-          },
-          "components": {
-            "FenderContact": {}
+            "position": [
+              0.18,
+              0.756,
+              -0.144
+            ]
           }
         },
         {
+          "content": {
+            "asset": "mooring-zone",
+            "type": "asset"
+          },
           "id": "mooring-zone",
           "name": "Mooring Zone",
-          "content": {
-            "type": "asset",
-            "asset": "mooring-zone"
-          },
           "transform": {
-            "position": [0, 0.748, -0.095]
+            "position": [
+              0,
+              0.748,
+              -0.095
+            ]
           }
         },
         {
-          "id": "cargo-vessel",
-          "name": "Cargo Vessel",
-          "content": {
-            "type": "asset",
-            "asset": "cargo-vessel",
-            "castShadow": true,
-            "receiveShadow": true
-          },
-          "transform": {
-            "position": [-0.16, 0.747, 0.11],
-            "rotationDeg": [0, 18, 0]
-          },
           "components": {
-            "RayInteractable": {},
             "DistanceGrabbable": {
               "movementMode": "MoveFromTarget",
               "scale": false
             },
+            "RayInteractable": {},
             "VesselBody": {
-              "vx": 0.024,
-              "vz": -0.015,
+              "active": true,
               "omega": 0,
               "tugForceX": 0,
               "tugForceZ": 0,
               "tugTorque": 0,
-              "active": true
+              "vx": 0.024,
+              "vz": -0.015
             }
-          }
-        },
-        {
-          "id": "drift-trajectory",
-          "name": "Drift Trajectory",
+          },
           "content": {
-            "type": "asset",
-            "asset": "drift-trajectory"
+            "asset": "cargo-vessel",
+            "castShadow": true,
+            "receiveShadow": true,
+            "type": "asset"
+          },
+          "id": "cargo-vessel",
+          "name": "Cargo Vessel",
+          "transform": {
+            "position": [
+              -0.16,
+              0.747,
+              0.11
+            ],
+            "rotationDeg": [
+              0,
+              18,
+              0
+            ]
           }
         },
         {
+          "content": {
+            "asset": "drift-trajectory",
+            "type": "asset"
+          },
+          "id": "drift-trajectory",
+          "name": "Drift Trajectory"
+        },
+        {
+          "components": {
+            "DistanceGrabbable": {
+              "movementMode": "MoveFromTarget",
+              "scale": false
+            },
+            "RayInteractable": {},
+            "Tugboat": {
+              "engaged": false,
+              "offsetX": 0.01,
+              "offsetZ": -0.065,
+              "stationOffset": 0.075
+            }
+          },
+          "content": {
+            "asset": "tugboat",
+            "castShadow": true,
+            "type": "asset"
+          },
           "id": "tug-bow",
           "name": "Tug Bow",
-          "content": {
-            "type": "asset",
-            "asset": "tugboat",
-            "castShadow": true
-          },
           "transform": {
-            "position": [-0.09, 0.747, 0.03]
-          },
-          "components": {
-            "RayInteractable": {},
-            "DistanceGrabbable": {
-              "movementMode": "MoveFromTarget",
-              "scale": false
-            },
-            "Tugboat": {
-              "stationOffset": 0.075,
-              "engaged": true,
-              "offsetX": 0.01,
-              "offsetZ": -0.065
-            }
+            "position": [
+              0.12,
+              0.747,
+              0.18
+            ]
           }
         },
         {
-          "id": "tug-stern",
-          "name": "Tug Stern",
-          "content": {
-            "type": "asset",
-            "asset": "tugboat",
-            "castShadow": true
-          },
-          "transform": {
-            "position": [-0.26, 0.747, 0.16]
-          },
           "components": {
-            "RayInteractable": {},
             "DistanceGrabbable": {
               "movementMode": "MoveFromTarget",
               "scale": false
             },
+            "RayInteractable": {},
             "Tugboat": {
-              "stationOffset": -0.075,
               "engaged": false,
               "offsetX": 0,
-              "offsetZ": -0.06
+              "offsetZ": -0.06,
+              "stationOffset": -0.075
             }
+          },
+          "content": {
+            "asset": "tugboat",
+            "castShadow": true,
+            "type": "asset"
+          },
+          "id": "tug-stern",
+          "name": "Tug Stern",
+          "transform": {
+            "position": [
+              -0.25,
+              0.747,
+              0.2
+            ],
+            "rotationDeg": [
+              0,
+              0,
+              0
+            ],
+            "scale": 1
           }
         },
         {
-          "id": "weather-dial",
-          "name": "Weather Dial",
-          "content": {
-            "type": "asset",
-            "asset": "weather-dial",
-            "castShadow": true
-          },
-          "transform": {
-            "position": [0.36, 0.742, 0.22],
-            "rotationDeg": [0, -75, 0]
-          },
           "components": {
             "RayInteractable": {},
             "WeatherDial": {
               "windDirectionDeg": -75
             }
+          },
+          "content": {
+            "asset": "weather-dial",
+            "castShadow": true,
+            "type": "asset"
+          },
+          "id": "weather-dial",
+          "name": "Weather Dial",
+          "transform": {
+            "position": [
+              0.36,
+              0.742,
+              0.22
+            ],
+            "rotationDeg": [
+              0,
+              -75,
+              0
+            ]
           }
         },
         {
-          "id": "sim-toggle-button",
-          "name": "Sim Toggle Button",
-          "content": {
-            "type": "asset",
-            "asset": "sim-toggle-button",
-            "castShadow": true
-          },
-          "transform": {
-            "position": [-0.36, 0.742, 0.22]
-          },
           "components": {
             "RayInteractable": {},
             "SimToggleButton": {
               "isRunning": true
             }
+          },
+          "content": {
+            "asset": "sim-toggle-button",
+            "castShadow": true,
+            "type": "asset"
+          },
+          "id": "sim-toggle-button",
+          "name": "Sim Toggle Button",
+          "transform": {
+            "position": [
+              -0.36,
+              0.742,
+              0.22
+            ]
           }
         },
         {
-          "id": "laser-guides",
-          "name": "Laser Guides",
           "content": {
-            "type": "asset",
-            "asset": "laser-guides"
-          }
+            "asset": "laser-guides",
+            "type": "asset"
+          },
+          "id": "laser-guides",
+          "name": "Laser Guides"
         }
-      ]
-    },
-    {
-      "id": "welcome-panel",
-      "name": "Welcome Panel",
-      "content": {
-        "type": "asset",
-        "asset": "welcome-panel"
-      },
-      "transform": {
-        "position": [0, 1.18, -0.95],
-        "rotationDeg": [0, 0, 0],
-        "scale": 0.15
-      },
+      ],
       "components": {
-        "RayInteractable": {}
+        "HarborEnvironment": {
+          "currentDirectionDeg": 0,
+          "currentSpeed": 0.15,
+          "windDirectionDeg": -75,
+          "windSpeed": 0.35
+        }
+      },
+      "content": {
+        "asset": "harbor-table",
+        "castShadow": true,
+        "receiveShadow": true,
+        "type": "asset"
+      },
+      "id": "harbor-table",
+      "name": "Harbor Table",
+      "transform": {
+        "position": [
+          0,
+          0,
+          -0.55
+        ]
       }
     },
     {
+      "components": {
+        "RayInteractable": {}
+      },
+      "content": {
+        "asset": "welcome-panel",
+        "type": "asset"
+      },
+      "id": "welcome-panel",
+      "name": "Welcome Panel",
+      "transform": {
+        "position": [
+          0,
+          1.18,
+          -0.95
+        ],
+        "rotationDeg": [
+          0,
+          0,
+          0
+        ],
+        "scale": 0.15
+      }
+    },
+    {
+      "components": {
+        "DirectionalLight": {
+          "castShadow": true,
+          "color": [
+            1,
+            0.96,
+            0.9,
+            1
+          ],
+          "intensity": 2.2,
+          "shadowBias": -0.0004,
+          "shadowCameraFar": 15,
+          "shadowCameraNear": 1,
+          "shadowCameraSize": 4,
+          "shadowMapSize": "2048",
+          "shadowNormalBias": 0.02,
+          "shadowRadius": 4
+        }
+      },
       "id": "key-light",
       "name": "Key Light",
       "transform": {
-        "position": [-1.5, 6.0, 1.2],
-        "rotationDeg": [-68, -15, 0]
-      },
-      "components": {
-        "DirectionalLight": {
-          "color": [1, 0.96, 0.9, 1],
-          "intensity": 2.2,
-          "castShadow": true,
-          "shadowMapSize": "2048",
-          "shadowCameraSize": 4,
-          "shadowCameraNear": 1,
-          "shadowCameraFar": 15,
-          "shadowRadius": 4,
-          "shadowBias": -0.0004,
-          "shadowNormalBias": 0.02
-        }
+        "position": [
+          -1.5,
+          6,
+          1.2
+        ],
+        "rotationDeg": [
+          -68,
+          -15,
+          0
+        ]
       }
     },
     {
-      "id": "fill-light",
-      "name": "Fill Light",
       "components": {
         "HemisphereLight": {
-          "skyColor": [0.65, 0.75, 0.9, 1],
-          "groundColor": [0.25, 0.3, 0.38, 1],
-          "intensity": 1.0
+          "groundColor": [
+            0.25,
+            0.3,
+            0.38,
+            1
+          ],
+          "intensity": 1,
+          "skyColor": [
+            0.65,
+            0.75,
+            0.9,
+            1
+          ]
         }
-      }
+      },
+      "id": "fill-light",
+      "name": "Fill Light"
     }
-  ]
+  ],
+  "resources": {},
+  "units": "meters",
+  "version": "iwsdk.scene.v1"
 }
