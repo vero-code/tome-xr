@@ -211,11 +211,6 @@
           },
           "components": {
             "RayInteractable": {},
-            "DistanceGrabbable": {
-              "movementMode": "RotateAtSource",
-              "translate": false,
-              "scale": false
-            },
             "WeatherDial": {
               "windDirectionDeg": -75
             }

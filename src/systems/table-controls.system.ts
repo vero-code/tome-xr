@@ -1,7 +1,6 @@
 import {
   Color,
   createSystem,
-  Grabbed,
   Mesh,
   MeshStandardMaterial,
   Pressed,
@@ -10,7 +9,7 @@ import {
   RAD_TO_DEG,
   WEATHER_DIAL_CONFIG,
 } from '../constants/interaction.constants.js';
-import { DEG_TO_RAD } from '../constants/physics.constants.js';
+import { DEG_TO_RAD, MAX_SIMULATION_DT } from '../constants/physics.constants.js';
 import { HARBOR_COLORS } from '../constants/table.constants.js';
 import {
   SimToggleButton,
@@ -19,9 +18,13 @@ import {
 import { HarborEnvironment } from '../entities/environment.component.js';
 import { VesselBody } from '../entities/vessel.component.js';
 
+const COMPASS_STEP_RAD = 45 * DEG_TO_RAD;
+const TAP_MAX_DURATION_SEC = 0.25;
+const ROTATION_SPEED_RAD_PER_SEC = 90 * DEG_TO_RAD;
+
 export class TableControlsSystem extends createSystem({
   dials: { required: [WeatherDial] },
-  heldDials: { required: [WeatherDial, Grabbed] },
+  pressedDials: { required: [WeatherDial, Pressed] },
   buttons: { required: [SimToggleButton] },
   pressedButtons: { required: [SimToggleButton, Pressed] },
   environments: { required: [HarborEnvironment] },
@@ -30,6 +33,7 @@ export class TableControlsSystem extends createSystem({
   private activeColor!: Color;
   private pausedColor!: Color;
   private dialYaw = -75 * DEG_TO_RAD;
+  private pressDuration = 0;
 
   init(): void {
     this.activeColor = new Color(HARBOR_COLORS.buttonActive);
@@ -41,6 +45,18 @@ export class TableControlsSystem extends createSystem({
       if (entity.object3D != null) {
         entity.object3D.rotation.set(0, this.dialYaw, 0);
       }
+    });
+
+    this.queries.pressedDials.subscribe('qualify', () => {
+      this.pressDuration = 0;
+    });
+
+    // On release: if was a short tap, step 45 degrees
+    this.queries.pressedDials.subscribe('disqualify', (dialEntity) => {
+      if (this.pressDuration <= TAP_MAX_DURATION_SEC) {
+        this.stepRotation(dialEntity);
+      }
+      this.pressDuration = 0;
     });
 
     this.queries.pressedButtons.subscribe('qualify', (buttonEntity) => {
@@ -76,23 +92,49 @@ export class TableControlsSystem extends createSystem({
     });
   }
 
-  update(): void {
-    for (const dialEntity of this.queries.heldDials.entities) {
-      const obj = dialEntity.object3D;
-      if (obj == null) {
-        continue;
-      }
+  update(delta: number): void {
+    const dt = Math.min(Math.max(delta, 0.001), MAX_SIMULATION_DT);
 
-      // Lock dial rotation strictly to horizontal Y axis
-      this.dialYaw = obj.rotation.y;
+    for (const dialEntity of this.queries.pressedDials.entities) {
+      this.pressDuration += dt;
+
+      // Start smooth rotation only after hold threshold is exceeded
+      if (this.pressDuration > TAP_MAX_DURATION_SEC) {
+        this.dialYaw += ROTATION_SPEED_RAD_PER_SEC * dt;
+        if (this.dialYaw > Math.PI) {
+          this.dialYaw -= 2 * Math.PI;
+        }
+
+        const obj = dialEntity.object3D;
+        if (obj != null) {
+          obj.rotation.set(0, this.dialYaw, 0);
+        }
+
+        this.syncEnvironment(dialEntity);
+      }
+    }
+  }
+
+  private stepRotation(dialEntity: import('@iwsdk/core').Entity): void {
+    this.dialYaw += COMPASS_STEP_RAD;
+    if (this.dialYaw > Math.PI) {
+      this.dialYaw -= 2 * Math.PI;
+    }
+
+    const obj = dialEntity.object3D;
+    if (obj != null) {
       obj.rotation.set(0, this.dialYaw, 0);
+    }
 
-      const windDeg = this.dialYaw * RAD_TO_DEG;
-      dialEntity.setValue(WeatherDial, 'windDirectionDeg', windDeg);
+    this.syncEnvironment(dialEntity);
+  }
 
-      for (const envEntity of this.queries.environments.entities) {
-        envEntity.setValue(HarborEnvironment, 'windDirectionDeg', windDeg);
-      }
+  private syncEnvironment(dialEntity: import('@iwsdk/core').Entity): void {
+    const windDeg = this.dialYaw * RAD_TO_DEG;
+    dialEntity.setValue(WeatherDial, 'windDirectionDeg', windDeg);
+
+    for (const envEntity of this.queries.environments.entities) {
+      envEntity.setValue(HarborEnvironment, 'windDirectionDeg', windDeg);
     }
   }
 }
