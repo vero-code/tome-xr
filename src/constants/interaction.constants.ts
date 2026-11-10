@@ -1,4 +1,4 @@
-import type { VesselGrabConfig, TugConfig } from '../types/interaction.types.js';
+import type { VesselGrabConfig, TugConfig, WeatherDialConfig } from '../types/interaction.types.js';
 
 export const VESSEL_GRAB_CONFIG: VesselGrabConfig = {
   cruiseSpeed: 0.018,
@@ -18,3 +18,11 @@ export const TUG_CONFIG: TugConfig = {
   maxThrustForce: 0.015,
   torqueScale: 1.8,
 };
+
+export const WEATHER_DIAL_CONFIG: WeatherDialConfig = {
+  radius: 0.042,
+  height: 0.012,
+  pressedOffsetY: -0.004,
+};
+
+export const RAD_TO_DEG = 180 / Math.PI;

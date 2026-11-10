@@ -71,4 +71,8 @@ export const HARBOR_COLORS = {
   tugHull: '#E3B341',
   tugCabin: '#21262D',
   towLine: '#F0883E',
+  dialBase: '#21262D',
+  dialArrow: '#58A6FF',
+  buttonActive: '#2EA043',
+  buttonPaused: '#D29922',
 } as const;

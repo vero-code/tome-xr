@@ -25,3 +25,9 @@ export interface TugConfig {
   readonly maxThrustForce: number;
   readonly torqueScale: number;
 }
+
+export interface WeatherDialConfig {
+  readonly radius: number;
+  readonly height: number;
+  readonly pressedOffsetY: number;
+}
