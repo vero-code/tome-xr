@@ -1,13 +1,20 @@
 import { createSystem, type Entity, Grabbed, type Object3D } from '@iwsdk/core';
-import { TUG_CONFIG } from '../constants/interaction.constants.js';
+import {
+  TUG_CONFIG,
+  TRACKING_GUARD_CONFIG,
+} from '../constants/interaction.constants.js';
 import { BASIN_BOUNDS } from '../constants/physics.constants.js';
+import { TrackingGuard } from '../core/tracking-guard.js';
 import { Tugboat } from '../entities/tugboat.component.js';
 import { VesselBody } from '../entities/vessel.component.js';
+import type { FilteredVector2 } from '../types/interaction.types.js';
 
 export class TugboatSystem extends createSystem({
   tugs: { required: [Tugboat] },
   vessels: { required: [VesselBody] },
 }) {
+  private filtered: FilteredVector2 = { x: 0, z: 0, valid: true };
+
   update(): void {
     const vesselEntity = this.getPrimaryVessel();
     if (vesselEntity == null || vesselEntity.object3D == null) {
@@ -43,34 +50,48 @@ export class TugboatSystem extends createSystem({
       let offsetZ = tugEntity.getValue(Tugboat, 'offsetZ') ?? -0.06;
 
       if (isGrabbed) {
+        const prevTargetX = attachX + offsetX;
+        const prevTargetZ = attachZ + offsetZ;
+
+        TrackingGuard.filter(
+          tugObj.position.x,
+          tugObj.position.z,
+          prevTargetX,
+          prevTargetZ,
+          TRACKING_GUARD_CONFIG,
+          this.filtered,
+        );
+
         const clampedX = Math.min(
           BASIN_BOUNDS.maxX,
-          Math.max(BASIN_BOUNDS.minX, tugObj.position.x),
+          Math.max(BASIN_BOUNDS.minX, this.filtered.x),
         );
         const clampedZ = Math.min(
           BASIN_BOUNDS.maxZ,
-          Math.max(BASIN_BOUNDS.minZ, tugObj.position.z),
+          Math.max(BASIN_BOUNDS.minZ, this.filtered.z),
         );
         tugObj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, clampedZ);
 
-        const rawDx = clampedX - attachX;
-        const rawDz = clampedZ - attachZ;
-        const rawDist = Math.hypot(rawDx, rawDz);
+        if (this.filtered.valid) {
+          const rawDx = clampedX - attachX;
+          const rawDz = clampedZ - attachZ;
+          const rawDist = Math.hypot(rawDx, rawDz);
 
-        if (rawDist <= TUG_CONFIG.engageRadius && rawDist > 0.005) {
-          engaged = true;
-          const clampedDist = Math.min(
-            TUG_CONFIG.maxPullDistance,
-            Math.max(TUG_CONFIG.minPullDistance, rawDist),
-          );
-          offsetX = (rawDx / rawDist) * clampedDist;
-          offsetZ = (rawDz / rawDist) * clampedDist;
-          tugEntity.setValue(Tugboat, 'engaged', true);
-          tugEntity.setValue(Tugboat, 'offsetX', offsetX);
-          tugEntity.setValue(Tugboat, 'offsetZ', offsetZ);
-        } else {
-          engaged = false;
-          tugEntity.setValue(Tugboat, 'engaged', false);
+          if (rawDist <= TUG_CONFIG.engageRadius && rawDist > 0.005) {
+            engaged = true;
+            const clampedDist = Math.min(
+              TUG_CONFIG.maxPullDistance,
+              Math.max(TUG_CONFIG.minPullDistance, rawDist),
+            );
+            offsetX = (rawDx / rawDist) * clampedDist;
+            offsetZ = (rawDz / rawDist) * clampedDist;
+            tugEntity.setValue(Tugboat, 'engaged', true);
+            tugEntity.setValue(Tugboat, 'offsetX', offsetX);
+            tugEntity.setValue(Tugboat, 'offsetZ', offsetZ);
+          } else {
+            engaged = false;
+            tugEntity.setValue(Tugboat, 'engaged', false);
+          }
         }
       }
 
@@ -85,7 +106,6 @@ export class TugboatSystem extends createSystem({
         continue;
       }
 
-      // Position tugboat along its active vector and orient along pull direction
       const dist = Math.hypot(offsetX, offsetZ);
       if (dist < 0.005) {
         this.updateVisualVector(towLine, thrustArrow, 0, false);
@@ -109,7 +129,6 @@ export class TugboatSystem extends createSystem({
       );
       this.updateVisualVector(towLine, thrustArrow, activeDist, true);
 
-      // Compute normalized thrust magnitude from pull extension
       const pullRatio = Math.min(
         1,
         Math.max(

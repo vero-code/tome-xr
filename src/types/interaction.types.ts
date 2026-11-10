@@ -43,3 +43,10 @@ export interface FilteredVector2 {
   z: number;
   valid: boolean;
 }
+
+export interface TrackingGuardConfig {
+  readonly maxDisplacementPerFrame: number;
+  readonly positionSmoothing: number;
+  readonly velocityClamp: number;
+  readonly outOfBoundsMargin: number;
+}

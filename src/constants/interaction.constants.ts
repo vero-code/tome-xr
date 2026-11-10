@@ -28,9 +28,9 @@ export const WEATHER_DIAL_CONFIG: WeatherDialConfig = {
 
 export const RAD_TO_DEG = 180 / Math.PI;
 
-// Seated 60cm envelope: >5cm movement in a single frame is a tracking glitch
 export const TRACKING_GUARD_CONFIG: TrackingGuardConfig = {
   maxDisplacementPerFrame: 0.045,
   positionSmoothing: 0.35,
   velocityClamp: 0.05,
+  outOfBoundsMargin: 0.02,
 };
