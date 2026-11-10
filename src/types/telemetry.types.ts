@@ -13,3 +13,13 @@ export interface TelemetryReading {
   speedCmPerSec: number;
   active: boolean;
 }
+
+export interface FenderContactConfig {
+  readonly contactDistance: number;
+  readonly safeSpeedMps: number;
+  readonly crashSpeedMps: number;
+  readonly idleColor: string;
+  readonly safeColor: string;
+  readonly warnColor: string;
+  readonly crashColor: string;
+}
