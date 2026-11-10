@@ -1,6 +1,7 @@
 import { World } from '@iwsdk/core';
 import projectOptions from 'virtual:iwsdk-project';
 import { PanelSystem } from './systems/panel.system.js';
+import { VesselGrabSystem } from './systems/vessel-grab.system.js';
 import { VesselPhysicsSystem } from './systems/vessel-physics.system.js';
 import { TrajectorySystem } from './systems/trajectory.system.js';
 
@@ -9,6 +10,7 @@ World.create(
   projectOptions,
 ).then((world) => {
   world.registerSystem(PanelSystem);
+  world.registerSystem(VesselGrabSystem);
   world.registerSystem(VesselPhysicsSystem);
   world.registerSystem(TrajectorySystem);
 });
