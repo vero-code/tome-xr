@@ -68,4 +68,7 @@ export const HARBOR_COLORS = {
   containerOrange: '#BD561D',
   trajectoryMarker: '#58A6FF',
   ghostHull: '#79C0FF',
+  tugHull: '#E3B341',
+  tugCabin: '#21262D',
+  towLine: '#F0883E',
 } as const;

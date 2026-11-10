@@ -15,3 +15,13 @@ export interface VesselDragTracker {
   smoothedVz: number;
   initialized: boolean;
 }
+
+export interface TugConfig {
+  readonly bowStationOffset: number;
+  readonly sternStationOffset: number;
+  readonly engageRadius: number;
+  readonly minPullDistance: number;
+  readonly maxPullDistance: number;
+  readonly maxThrustForce: number;
+  readonly torqueScale: number;
+}
