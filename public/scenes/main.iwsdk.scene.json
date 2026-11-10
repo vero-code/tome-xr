@@ -196,6 +196,48 @@
               "offsetZ": -0.06
             }
           }
+        },
+        {
+          "id": "weather-dial",
+          "name": "Weather Dial",
+          "content": {
+            "type": "asset",
+            "asset": "weather-dial",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [0.36, 0.742, 0.22],
+            "rotationDeg": [0, -75, 0]
+          },
+          "components": {
+            "RayInteractable": {},
+            "DistanceGrabbable": {
+              "movementMode": "RotateAtSource",
+              "translate": false,
+              "scale": false
+            },
+            "WeatherDial": {
+              "windDirectionDeg": -75
+            }
+          }
+        },
+        {
+          "id": "sim-toggle-button",
+          "name": "Sim Toggle Button",
+          "content": {
+            "type": "asset",
+            "asset": "sim-toggle-button",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [-0.36, 0.742, 0.22]
+          },
+          "components": {
+            "RayInteractable": {},
+            "SimToggleButton": {
+              "isRunning": true
+            }
+          }
         }
       ]
     },
