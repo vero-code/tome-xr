@@ -31,3 +31,15 @@ export interface WeatherDialConfig {
   readonly height: number;
   readonly pressedOffsetY: number;
 }
+
+export interface TrackingGuardConfig {
+  readonly maxDisplacementPerFrame: number;
+  readonly positionSmoothing: number;
+  readonly velocityClamp: number;
+}
+
+export interface FilteredVector2 {
+  x: number;
+  z: number;
+  valid: boolean;
+}
