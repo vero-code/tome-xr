@@ -146,6 +146,56 @@
             "type": "asset",
             "asset": "drift-trajectory"
           }
+        },
+        {
+          "id": "tug-bow",
+          "name": "Tug Bow",
+          "content": {
+            "type": "asset",
+            "asset": "tugboat",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [-0.09, 0.747, 0.03]
+          },
+          "components": {
+            "RayInteractable": {},
+            "DistanceGrabbable": {
+              "movementMode": "MoveFromTarget",
+              "scale": false
+            },
+            "Tugboat": {
+              "stationOffset": 0.075,
+              "engaged": true,
+              "offsetX": 0.01,
+              "offsetZ": -0.065
+            }
+          }
+        },
+        {
+          "id": "tug-stern",
+          "name": "Tug Stern",
+          "content": {
+            "type": "asset",
+            "asset": "tugboat",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [-0.26, 0.747, 0.16]
+          },
+          "components": {
+            "RayInteractable": {},
+            "DistanceGrabbable": {
+              "movementMode": "MoveFromTarget",
+              "scale": false
+            },
+            "Tugboat": {
+              "stationOffset": -0.075,
+              "engaged": false,
+              "offsetX": 0,
+              "offsetZ": -0.06
+            }
+          }
         }
       ]
     },
