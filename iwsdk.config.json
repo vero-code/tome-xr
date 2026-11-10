@@ -12,6 +12,7 @@
     "xr": {
       "mode": "vr",
       "offer": "always",
+      "referenceSpace": "local-floor",
       "features": {
         "handTracking": true
       }
@@ -20,27 +21,19 @@
       "canvasPointerEvents": true
     },
     "render": {
-      "fov": 70,
-      "near": 0.001,
-      "far": 200,
+      "fov": 65,
+      "near": 0.01,
+      "far": 100,
       "camera": {
-        "position": [
-          0,
-          1.6,
-          1
-        ],
-        "lookAt": [
-          0,
-          0.95,
-          -1.95
-        ]
+        "position": [0, 1.25, 0.25],
+        "lookAt": [0, 0.78, -0.55]
       }
     },
     "features": {
-      "locomotion": {
-        "useWorker": true
+      "locomotion": false,
+      "grabbing": {
+        "useHandPinchForGrab": true
       },
-      "grabbing": true,
       "physics": false,
       "sceneUnderstanding": false,
       "environmentRaycast": false,
