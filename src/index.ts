@@ -6,6 +6,7 @@ import { TrajectorySystem } from './systems/trajectory.system.js';
 import { TugboatSystem } from './systems/tugboat.system.js';
 import { VesselGrabSystem } from './systems/vessel-grab.system.js';
 import { VesselPhysicsSystem } from './systems/vessel-physics.system.js';
+import { LaserGuidesSystem } from './systems/laser-guides.system.js';
 
 World.create(
   document.getElementById('scene-container') as HTMLDivElement,
@@ -17,4 +18,5 @@ World.create(
   world.registerSystem(TugboatSystem);
   world.registerSystem(VesselPhysicsSystem);
   world.registerSystem(TrajectorySystem);
+  world.registerSystem(LaserGuidesSystem);
 });

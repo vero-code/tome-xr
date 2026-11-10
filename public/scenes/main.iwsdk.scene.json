@@ -233,6 +233,14 @@
               "isRunning": true
             }
           }
+        },
+        {
+          "id": "laser-guides",
+          "name": "Laser Guides",
+          "content": {
+            "type": "asset",
+            "asset": "laser-guides"
+          }
         }
       ]
     },
