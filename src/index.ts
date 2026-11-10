@@ -1,6 +1,6 @@
 import { World } from '@iwsdk/core';
 import projectOptions from 'virtual:iwsdk-project';
-import { PanelSystem } from './panel.js';
+import { PanelSystem } from './systems/panel.system.js';
 
 World.create(
   document.getElementById('scene-container') as HTMLDivElement,
