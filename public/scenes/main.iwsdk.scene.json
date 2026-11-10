@@ -52,7 +52,70 @@
       },
       "transform": {
         "position": [0, 0, -0.55]
-      }
+      },
+      "children": [
+        {
+          "id": "fender-left",
+          "name": "Fender Left",
+          "content": {
+            "type": "asset",
+            "asset": "pier-fender",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [-0.18, 0.756, -0.144]
+          }
+        },
+        {
+          "id": "fender-center",
+          "name": "Fender Center",
+          "content": {
+            "type": "asset",
+            "asset": "pier-fender",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [0, 0.756, -0.144]
+          }
+        },
+        {
+          "id": "fender-right",
+          "name": "Fender Right",
+          "content": {
+            "type": "asset",
+            "asset": "pier-fender",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [0.18, 0.756, -0.144]
+          }
+        },
+        {
+          "id": "mooring-zone",
+          "name": "Mooring Zone",
+          "content": {
+            "type": "asset",
+            "asset": "mooring-zone"
+          },
+          "transform": {
+            "position": [0, 0.748, -0.095]
+          }
+        },
+        {
+          "id": "cargo-vessel",
+          "name": "Cargo Vessel",
+          "content": {
+            "type": "asset",
+            "asset": "cargo-vessel",
+            "castShadow": true,
+            "receiveShadow": true
+          },
+          "transform": {
+            "position": [-0.16, 0.747, 0.11],
+            "rotationDeg": [0, 18, 0]
+          }
+        }
+      ]
     },
     {
       "id": "welcome-panel",
