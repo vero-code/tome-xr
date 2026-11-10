@@ -10,6 +10,7 @@ import { createDriftTrajectory } from './scene-assets/trajectory.scene-asset.js'
 import { createTugboat } from './scene-assets/tugboat.scene-asset.js';
 import { createWeatherDial, createSimToggleButton } from './scene-assets/controls.scene-asset.js';
 import { createLaserGuides } from './scene-assets/laser-guides.scene-asset.js';
+import { createScenarioButton } from './scene-assets/scenario-selector.scene-asset.js';
 
 const publicAssetUrl = (filePath: string): string =>
   `${import.meta.env.BASE_URL}${filePath.replace(/^\/+/u, '')}`;
@@ -32,4 +33,5 @@ export default defineAssets({
   'weather-dial': createWeatherDial(),
   'sim-toggle-button': createSimToggleButton(),
   'laser-guides': createLaserGuides(),
+  'scenario-button': createScenarioButton(),
 });

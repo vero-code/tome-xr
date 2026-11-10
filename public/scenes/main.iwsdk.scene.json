@@ -308,6 +308,60 @@
           },
           "id": "laser-guides",
           "name": "Laser Guides"
+        },
+        {
+          "id": "scenario-btn-1",
+          "name": "Scenario 1 Button",
+          "content": {
+            "type": "asset",
+            "asset": "scenario-button",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [-0.05, 0.742, 0.24]
+          },
+          "components": {
+            "RayInteractable": {},
+            "ScenarioButton": {
+              "scenarioId": 1
+            }
+          }
+        },
+        {
+          "id": "scenario-btn-2",
+          "name": "Scenario 2 Button",
+          "content": {
+            "type": "asset",
+            "asset": "scenario-button",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [0, 0.742, 0.24]
+          },
+          "components": {
+            "RayInteractable": {},
+            "ScenarioButton": {
+              "scenarioId": 2
+            }
+          }
+        },
+        {
+          "id": "scenario-btn-3",
+          "name": "Scenario 3 Button",
+          "content": {
+            "type": "asset",
+            "asset": "scenario-button",
+            "castShadow": true
+          },
+          "transform": {
+            "position": [0.05, 0.742, 0.24]
+          },
+          "components": {
+            "RayInteractable": {},
+            "ScenarioButton": {
+              "scenarioId": 3
+            }
+          }
         }
       ],
       "components": {
