@@ -68,6 +68,39 @@ npm run dev
 
 Open the reported local URL in Chromium to interact using mouse and emulated hands.
 
+## Controls & Workflow
+
+### Desktop IWER Emulator Controls
+
+When running locally without a VR headset:
+
+- **Look Around**: Hold **Right Mouse Button** and move the mouse to rotate the camera.
+- **Hand Position**: Move the mouse to position the active virtual hand.
+- **Pinch / Grab**: Hold **Left Mouse Button** to close index and thumb (grabs the ship or tugboat).
+- **Switch Hand**: Press **Shift** or **Ctrl** to alternate between right and left hands.
+- **Button Poke**: Move the hand's index finger directly into a button (or aim the reticle and click).
+
+### Step-by-Step Workflow Walkthrough
+
+1. **Scenario 1 (Calm Mooring)**:
+   - Tap **Scenario 1** button on the bottom table console.
+   - The vessel drifts gently along the predicted trajectory without wind.
+   - Pinch-grab the ship hull to guide its initial approach.
+   - Watch the laser guides from the pier fenders; entering the green berth zone at safe contact speed (< 5 cm/s) displays the **DOCKED SAFELY!** victory banner.
+
+2. **Scenario 2 (Crosswind & Tug Assistance)**:
+   - Tap **Scenario 2** button; the weather dial rotates, and a crosswind pushes the ship offshore.
+   - A bow tugboat spawns in clear water on the right.
+   - Pinch-grab the tugboat and bring it near the vessel's bow station.
+   - Stretch the yellow towline toward the pier to apply counteracting thrust and prevent wind drift.
+
+3. **Scenario 3 (Narrow Basin & Dual Tugs)**:
+   - Tap **Scenario 3** button for combined wind and water current forces.
+   - Two tugboats (bow and stern) are available to balance rotational torque and hold the vessel parallel to the pier wall.
+
+4. **Simulation Pause**:
+   - Tap the large green toggle button on the left edge of the table to pause or resume real-time vessel dynamics and drift prediction.
+
 ### Type Check
 
 ```sh
