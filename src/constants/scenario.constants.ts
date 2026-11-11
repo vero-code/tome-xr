@@ -28,8 +28,8 @@ export const SCENARIOS: Record<ScenarioId, ScenarioDefinition> = {
       vx: 0.016,
       vz: -0.01,
     },
-    tugBow: { active: false, x: 0.28, z: 0.18 },
-    tugStern: { active: false, x: -0.28, z: 0.18 },
+    tugBow: { active: false, x: 0.20, z: -0.04 },
+    tugStern: { active: false, x: 0.22, z: 0.14 },
   },
   // Scenario 2: Crosswind pushing offshore, 1 bow tug available
   2: {
@@ -45,8 +45,8 @@ export const SCENARIOS: Record<ScenarioId, ScenarioDefinition> = {
       vx: 0.02,
       vz: -0.008,
     },
-    tugBow: { active: true, x: 0.02, z: 0.16 },
-    tugStern: { active: false, x: -0.32, z: 0.2 },
+    tugBow: { active: true, x: 0.20, z: -0.04 },
+    tugStern: { active: false, x: 0.22, z: 0.14 },
   },
   // Scenario 3: Wind and current in narrow dock, 2 tugs required
   3: {
@@ -62,7 +62,7 @@ export const SCENARIOS: Record<ScenarioId, ScenarioDefinition> = {
       vx: 0.024,
       vz: -0.014,
     },
-    tugBow: { active: true, x: 0.04, z: 0.16 },
-    tugStern: { active: true, x: -0.26, z: 0.22 },
+    tugBow: { active: true, x: 0.20, z: -0.04 },
+    tugStern: { active: true, x: 0.18, z: 0.14 },
   },
 };

@@ -1,27 +1,10 @@
 import { createSystem, type Entity, Grabbed, type Object3D } from '@iwsdk/core';
-import {
-  TUG_CONFIG,
-  TRACKING_GUARD_CONFIG,
-} from '../constants/interaction.constants.js';
+import { TUG_CONFIG, TUG_BOUNDS, TUG_HULL_CLEARANCE, TRACKING_GUARD_CONFIG } from '../constants/interaction.constants.js';
 import { BASIN_BOUNDS } from '../constants/physics.constants.js';
 import { TrackingGuard } from '../core/tracking-guard.js';
 import { Tugboat } from '../entities/tugboat.component.js';
 import { VesselBody } from '../entities/vessel.component.js';
-import type { FilteredVector2 } from '../types/interaction.types.js';
-
-// Physical basin bounds for tugboats (table width 0.90m, basin inner width 0.84m, depth 0.60m)
-const TUG_BOUNDS = {
-  minX: -0.40,
-  maxX: 0.40,
-  minZ: -0.13,
-  maxZ: 0.25,
-};
-
-interface TugTracker {
-  prevX: number;
-  prevZ: number;
-  isHeld: boolean;
-}
+import type { FilteredVector2, TugTracker } from '../types/interaction.types.js';
 
 export class TugboatSystem extends createSystem({
   tugs: { required: [Tugboat] },
@@ -49,7 +32,7 @@ export class TugboatSystem extends createSystem({
 
     for (const tugEntity of this.queries.tugs.entities) {
       const tugObj = tugEntity.object3D;
-      if (tugObj == null) {
+      if (tugObj == null || !tugObj.visible) {
         continue;
       }
 
@@ -72,7 +55,7 @@ export class TugboatSystem extends createSystem({
       const isGrabbed = tugEntity.hasComponent(Grabbed);
       let engaged = Boolean(tugEntity.getValue(Tugboat, 'engaged'));
       let offsetX = tugEntity.getValue(Tugboat, 'offsetX') ?? 0;
-      let offsetZ = tugEntity.getValue(Tugboat, 'offsetZ') ?? -0.06;
+      let offsetZ = tugEntity.getValue(Tugboat, 'offsetZ') ?? -0.08;
 
       if (isGrabbed) {
         // Reset anchor point on initial grab
@@ -142,8 +125,9 @@ export class TugboatSystem extends createSystem({
         );
         tugObj.position.set(idleX, BASIN_BOUNDS.waterSurfaceY, idleZ);
         tugObj.rotation.set(0, 0, 0);
-        tracker.prevX = idleX;
-        tracker.prevZ = idleZ;
+        this.ensureHullClearance(tugObj, shipX, shipZ, cosH, sinH);
+        tracker.prevX = tugObj.position.x;
+        tracker.prevZ = tugObj.position.z;
 
         this.updateVisualVector(towLine, thrustArrow, 0, false);
         continue;
@@ -166,8 +150,9 @@ export class TugboatSystem extends createSystem({
           Math.max(TUG_BOUNDS.minZ, attachZ + offsetZ),
         );
         tugObj.position.set(posX, BASIN_BOUNDS.waterSurfaceY, posZ);
-        tracker.prevX = posX;
-        tracker.prevZ = posZ;
+        this.ensureHullClearance(tugObj, shipX, shipZ, cosH, sinH);
+        tracker.prevX = tugObj.position.x;
+        tracker.prevZ = tugObj.position.z;
       }
 
       const activeDist = Math.hypot(
@@ -235,6 +220,30 @@ export class TugboatSystem extends createSystem({
     }
     if (thrustArrow != null) {
       thrustArrow.visible = visible;
+    }
+  }
+
+  private ensureHullClearance(
+    tugObj: Object3D,
+    shipX: number,
+    shipZ: number,
+    cosH: number,
+    sinH: number,
+  ): void {
+    const dx = tugObj.position.x - shipX;
+    const dz = tugObj.position.z - shipZ;
+    const projLong = dx * cosH - dz * sinH;
+    const projLat = dx * sinH + dz * cosH;
+
+    if (
+      Math.abs(projLong) < TUG_HULL_CLEARANCE.halfLength &&
+      Math.abs(projLat) < TUG_HULL_CLEARANCE.minClearance
+    ) {
+      const sideSign = projLat >= 0 ? 1 : -1;
+      const pushLat = sideSign * TUG_HULL_CLEARANCE.minClearance;
+      const safeX = shipX + projLong * cosH + pushLat * sinH;
+      const safeZ = shipZ - projLong * sinH + pushLat * cosH;
+      tugObj.position.set(safeX, BASIN_BOUNDS.waterSurfaceY, safeZ);
     }
   }
 }

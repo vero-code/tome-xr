@@ -93,11 +93,15 @@ export class ScenarioSystem extends createSystem({
       const tugCfg = isBow ? config.tugBow : config.tugStern;
       tug.setValue(Tugboat, 'engaged', false);
       tug.setValue(Tugboat, 'offsetX', 0);
-      tug.setValue(Tugboat, 'offsetZ', -0.06);
+      tug.setValue(Tugboat, 'offsetZ', -0.08);
       if (tug.object3D != null) {
-        tug.object3D.position.set(tugCfg.x, BASIN_BOUNDS.waterSurfaceY, tugCfg.z);
-        tug.object3D.rotation.set(0, 0, 0);
-        tug.object3D.visible = true;
+        tug.object3D.visible = tugCfg.active;
+        if (tugCfg.active) {
+          tug.object3D.position.set(tugCfg.x, BASIN_BOUNDS.waterSurfaceY, tugCfg.z);
+          tug.object3D.rotation.set(0, 0, 0);
+        } else {
+          tug.object3D.position.set(0, -10, 0);
+        }
       }
     }
 

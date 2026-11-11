@@ -32,12 +32,6 @@ export interface WeatherDialConfig {
   readonly pressedOffsetY: number;
 }
 
-export interface TrackingGuardConfig {
-  readonly maxDisplacementPerFrame: number;
-  readonly positionSmoothing: number;
-  readonly velocityClamp: number;
-}
-
 export interface FilteredVector2 {
   x: number;
   z: number;
@@ -49,4 +43,17 @@ export interface TrackingGuardConfig {
   readonly positionSmoothing: number;
   readonly velocityClamp: number;
   readonly outOfBoundsMargin: number;
+}
+
+export interface TugTracker {
+  prevX: number;
+  prevZ: number;
+  isHeld: boolean;
+}
+
+export interface TugBounds {
+  readonly minX: number;
+  readonly maxX: number;
+  readonly minZ: number;
+  readonly maxZ: number;
 }

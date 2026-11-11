@@ -1,5 +1,11 @@
-import type { VesselGrabConfig, TugConfig, WeatherDialConfig } from '../types/interaction.types.js';
-import { TrackingGuardConfig } from '../types/interaction.types.js';
+import type {
+  FilteredVector2,
+  TrackingGuardConfig,
+  TugBounds,
+  TugConfig,
+  VesselGrabConfig,
+  WeatherDialConfig,
+} from '../types/interaction.types.js';
 
 export const VESSEL_GRAB_CONFIG: VesselGrabConfig = {
   cruiseSpeed: 0.018,
@@ -13,12 +19,24 @@ export const VESSEL_GRAB_CONFIG: VesselGrabConfig = {
 export const TUG_CONFIG: TugConfig = {
   bowStationOffset: 0.075,
   sternStationOffset: -0.075,
-  engageRadius: 0.18,
-  minPullDistance: 0.05,
-  maxPullDistance: 0.16,
+  engageRadius: 0.20,
+  minPullDistance: 0.08,
+  maxPullDistance: 0.18,
   maxThrustForce: 0.075,
   torqueScale: 2.5,
 };
+
+export const TUG_BOUNDS: TugBounds = {
+  minX: -0.40,
+  maxX: 0.40,
+  minZ: -0.13,
+  maxZ: 0.25,
+};
+
+export const TUG_HULL_CLEARANCE = {
+  halfLength: 0.13,
+  minClearance: 0.052,
+} as const;
 
 export const WEATHER_DIAL_CONFIG: WeatherDialConfig = {
   radius: 0.042,

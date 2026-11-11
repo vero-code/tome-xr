@@ -194,6 +194,7 @@
               "movementMode": "MoveFromTarget",
               "scale": false
             },
+            "OneHandGrabbable": {},
             "RayInteractable": {},
             "Tugboat": {
               "engaged": false,
@@ -211,9 +212,9 @@
           "name": "Tug Bow",
           "transform": {
             "position": [
-              0.12,
+              0.20,
               0.747,
-              0.18
+              -0.04
             ]
           }
         },
@@ -241,9 +242,9 @@
           "name": "Tug Stern",
           "transform": {
             "position": [
-              -0.25,
+              0.22,
               0.747,
-              0.2
+              0.14
             ],
             "rotationDeg": [
               0,
