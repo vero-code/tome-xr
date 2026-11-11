@@ -28,9 +28,9 @@ export function createScenarioButton(): Group {
     {
       geometry: {
         type: 'cylinder',
-        radius: 0.018,
+        radius: 0.022,
         height: 0.008,
-        segments: 20,
+        segments: 24,
       },
     },
     baseMaterial,
@@ -41,15 +41,15 @@ export function createScenarioButton(): Group {
     {
       geometry: {
         type: 'cylinder',
-        radius: 0.013,
-        height: 0.01,
-        segments: 20,
+        radius: 0.017,
+        height: 0.012,
+        segments: 24,
       },
     },
     capMaterial,
   );
   cap.name = 'ButtonCap';
-  cap.position.y = 0.009;
+  cap.position.y = 0.01;
 
   root.add(housing, cap);
   return root;

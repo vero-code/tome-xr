@@ -30,8 +30,45 @@
 
   .body {
     color: #8b949e;
-    font-size: 17px;
-    line-height: 24px;
+    font-size: 16px;
+    line-height: 22px;
+  }
+
+  .mission-badge {
+    flex-direction: column;
+    background-color: #161b22;
+    border-radius: 8px;
+    padding: 12px;
+    gap: 4px;
+    margin-top: 8px;
+  }
+
+  .mission-title {
+    color: #3fb950;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 1px;
+  }
+
+  .mission-text {
+    color: #c9d1d9;
+    font-size: 14px;
+    line-height: 20px;
+  }
+
+  .success-banner {
+    background-color: #238636;
+    border-radius: 8px;
+    padding: 12px;
+    margin-top: 8px;
+    justify-content: center;
+  }
+
+  .success-text {
+    color: #ffffff;
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 1px;
   }
 
   .button {
@@ -49,8 +86,15 @@
   <div class="panel-content">
     <div class="eyebrow">PORT PILOT BRIEFING</div>
     <div class="heading">TomeXR Planner</div>
-    <div class="body">Hands-first seated tactical mooring.</div>
-    <div class="body">Pinch hull & tugboats to guide cargo vessel.</div>
+    <div class="body">Hands-first seated tactical mooring planner.</div>
+    <div class="mission-badge">
+      <div class="mission-title">MISSION OBJECTIVE</div>
+      <div class="mission-text">Maneuver ship into GREEN BERTH at the pier.</div>
+      <div class="mission-text">Stop slowly without red fender impacts.</div>
+    </div>
+    <div id="dock-success" class="success-banner" style="display: none">
+      <div class="success-text">✓ DOCKED SAFELY! MISSION COMPLETE</div>
+    </div>
   </div>
   <Button id="xr-button" class="button">
     <ButtonIcon>

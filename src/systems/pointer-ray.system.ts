@@ -9,8 +9,8 @@ import {
 // Distinct bright cyan laser rays attached directly to player hand rays
 export class PointerRaySystem extends createSystem({}) {
   init(): void {
-    const rayLength = 1.0;
-    const geometry = new CylinderGeometry(0.001, 0.001, rayLength, 8);
+    const rayLength = 3.0;
+    const geometry = new CylinderGeometry(0.003, 0.003, rayLength, 8);
     geometry.rotateX(-Math.PI / 2);
     geometry.translate(0, 0, -rayLength / 2);
 

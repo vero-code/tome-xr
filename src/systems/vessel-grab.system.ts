@@ -60,13 +60,9 @@ export class VesselGrabSystem extends createSystem({
       );
       obj.rotation.set(0, this.tracker.headingRad, 0);
 
-      // Reset to calm cruise vector on release
-      const cruiseVx =
-        Math.cos(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
-      const cruiseVz =
-        -Math.sin(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
-      entity.setValue(VesselBody, 'vx', cruiseVx);
-      entity.setValue(VesselBody, 'vz', cruiseVz);
+      // Stop vessel on release so it can moor safely
+      entity.setValue(VesselBody, 'vx', 0);
+      entity.setValue(VesselBody, 'vz', 0);
       entity.setValue(VesselBody, 'omega', 0);
     });
   }
@@ -151,6 +147,16 @@ export class VesselGrabSystem extends createSystem({
           angleDiff * Math.min(1, VESSEL_GRAB_CONFIG.headingTurnSpeed * dt);
       }
 
+      // Docking assist: smoothly align ship parallel to pier (heading 0) near the dock
+      if (clampedZ < 0.05) {
+        const dockProximity = Math.min(1, Math.max(0, (0.05 - clampedZ) / 0.12));
+        const alignDiff = Math.atan2(
+          Math.sin(0 - this.tracker.headingRad),
+          Math.cos(0 - this.tracker.headingRad),
+        );
+        this.tracker.headingRad += alignDiff * dockProximity * Math.min(1, 10.0 * dt);
+      }
+
       const safeZ = Math.max(
         clampedZ,
         pierLimitZ(this.tracker.headingRad, VESSEL_PHYSICS, BASIN_BOUNDS.pierFaceZ),
@@ -165,12 +171,10 @@ export class VesselGrabSystem extends createSystem({
         -Math.sin(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
 
       obj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, safeZ);
-
-      obj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, clampedZ);
       obj.rotation.set(0, this.tracker.headingRad, 0);
 
-      entity.setValue(VesselBody, 'vx', this.tracker.smoothedVx);
-      entity.setValue(VesselBody, 'vz', this.tracker.smoothedVz);
+      entity.setValue(VesselBody, 'vx', 0);
+      entity.setValue(VesselBody, 'vz', 0);
       entity.setValue(VesselBody, 'omega', 0);
     }
   }

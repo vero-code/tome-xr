@@ -255,7 +255,6 @@
         },
         {
           "components": {
-            "OneHandGrabbable": {},
             "RayInteractable": {},
             "WeatherDial": {
               "windDirectionDeg": -75
