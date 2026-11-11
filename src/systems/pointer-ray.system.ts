@@ -4,11 +4,23 @@ import {
   CylinderGeometry,
   Mesh,
   MeshBasicMaterial,
+  VisibilityState,
 } from '@iwsdk/core';
+
+// Distance to step back ONLY in XR hands mode (meters)
+const XR_SEATED_OFFSET_Z = 0.20;
 
 // Distinct bright cyan laser rays attached directly to player hand rays
 export class PointerRaySystem extends createSystem({}) {
   init(): void {
+    // Only in XR mode: move player further back from table; in 2D mode keep at origin (0)
+    this.cleanupFuncs.push(
+      this.world.visibilityState.subscribe((visibilityState) => {
+        const isXR = visibilityState !== VisibilityState.NonImmersive;
+        this.player.position.set(0, 0, isXR ? XR_SEATED_OFFSET_Z : 0);
+      }),
+    );
+
     const rayLength = 3.0;
     const geometry = new CylinderGeometry(0.003, 0.003, rayLength, 8);
     geometry.rotateX(-Math.PI / 2);
