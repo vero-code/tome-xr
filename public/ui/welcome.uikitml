@@ -5,7 +5,7 @@
 <style>
   .panel-root {
     flex-direction: column;
-    width: 440px;
+    width: 600px;
   }
 
   .panel-content {
@@ -34,7 +34,7 @@
     line-height: 22px;
   }
 
-  .mission-badge {
+  .scenario-card {
     flex-direction: column;
     background-color: #161b22;
     border-radius: 8px;
@@ -43,17 +43,22 @@
     margin-top: 8px;
   }
 
-  .mission-title {
-    color: #3fb950;
+  .scenario-tag {
     font-size: 13px;
     font-weight: 700;
     letter-spacing: 1px;
   }
 
-  .mission-text {
-    color: #c9d1d9;
-    font-size: 14px;
-    line-height: 20px;
+  .scenario-stats {
+    color: #8b949e;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .scenario-mission {
+    color: #e6edf3;
+    font-size: 13px;
+    line-height: 18px;
   }
 
   .success-banner {
@@ -85,12 +90,21 @@
 <Panel class="panel-root">
   <div class="panel-content">
     <div class="eyebrow">PORT PILOT BRIEFING</div>
-    <div class="heading">TomeXR Planner</div>
-    <div class="body">Hands-first seated tactical mooring planner.</div>
-    <div class="mission-badge">
-      <div class="mission-title">MISSION OBJECTIVE</div>
-      <div class="mission-text">Maneuver ship into GREEN BERTH at the pier.</div>
-      <div class="mission-text">Stop slowly without red fender impacts.</div>
+    <div class="heading">TomeXR - Hands-first mooring planner</div>
+    <div id="scenario-card-1" class="scenario-card">
+      <div class="scenario-tag" style="color: #3fb950">SCENARIO 1: CALM HARBOR</div>
+      <div class="scenario-stats">Wind: Calm (0 kts) | Current: None</div>
+      <div class="scenario-mission">Goal: Basic training. Guide vessel into green berth.</div>
+    </div>
+    <div id="scenario-card-2" class="scenario-card" style="display: none">
+      <div class="scenario-tag" style="color: #f0883e">SCENARIO 2: OFFSHORE CROSSWIND</div>
+      <div class="scenario-stats">Wind: 18 kts (Offshore) | Current: None</div>
+      <div class="scenario-mission">Goal: Wind blows ship to sea. Deploy bow tug to counter drift!</div>
+    </div>
+    <div id="scenario-card-3" class="scenario-card" style="display: none">
+      <div class="scenario-tag" style="color: #ff7b72">SCENARIO 3: STORM & TIDAL CURRENT</div>
+      <div class="scenario-stats">Wind: 22 kts | Current: 1.5 kts East</div>
+      <div class="scenario-mission">Goal: High drift. Deploy both tugs to stabilize heading!</div>
     </div>
     <div id="dock-success" class="success-banner" style="display: none">
       <div class="success-text">✓ DOCKED SAFELY! MISSION COMPLETE</div>

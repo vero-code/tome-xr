@@ -4,6 +4,7 @@ import {
   Mesh,
   MeshStandardMaterial,
   Pressed,
+  type UIKitMLAsset,
 } from '@iwsdk/core';
 import { DEG_TO_RAD } from '../constants/physics.constants.js';
 import {
@@ -29,6 +30,7 @@ export class ScenarioSystem extends createSystem({
   private activeId: ScenarioId = 1;
   private activeColor = new Color(SCENARIO_BUTTON_CONFIG.activeColor);
   private idleColor = new Color(SCENARIO_BUTTON_CONFIG.idleColor);
+  private initialized = false;
 
   init(): void {
     this.queries.buttons.subscribe('qualify', () => {
@@ -40,6 +42,13 @@ export class ScenarioSystem extends createSystem({
       const targetId = Math.max(1, Math.min(3, rawId)) as ScenarioId;
       this.switchScenario(targetId);
     });
+  }
+
+  update(): void {
+    if (!this.initialized && this.queries.buttons.entities.size >= 3) {
+      this.switchScenario(1);
+      this.initialized = true;
+    }
   }
 
   private switchScenario(id: ScenarioId): void {
@@ -94,6 +103,15 @@ export class ScenarioSystem extends createSystem({
 
     // Update LED visual highlights on buttons
     this.updateButtonColors();
+
+    // Update briefing board with active scenario card
+    const panel = this.world.getSceneObject<UIKitMLAsset>('welcome-panel');
+    if (panel != null) {
+      for (let i = 1; i <= 3; i += 1) {
+        const card = panel.getElementById(`scenario-card-${i}`);
+        card?.setProperties({ display: i === id ? 'flex' : 'none' });
+      }
+    }
   }
 
   private updateButtonColors(): void {
