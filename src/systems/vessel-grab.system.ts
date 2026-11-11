@@ -60,9 +60,23 @@ export class VesselGrabSystem extends createSystem({
       );
       obj.rotation.set(0, this.tracker.headingRad, 0);
 
-      // Stop vessel on release so it can moor safely
-      entity.setValue(VesselBody, 'vx', 0);
-      entity.setValue(VesselBody, 'vz', 0);
+      // Stop in berth; in open water continue at cruise speed along heading
+      const inBerth =
+        Math.abs(this.tracker.prevX) <= 0.12 &&
+        this.tracker.prevZ >= -0.13 &&
+        this.tracker.prevZ <= -0.06;
+
+      if (inBerth) {
+        entity.setValue(VesselBody, 'vx', 0);
+        entity.setValue(VesselBody, 'vz', 0);
+      } else {
+        const cruiseVx =
+          Math.cos(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
+        const cruiseVz =
+          -Math.sin(this.tracker.headingRad) * VESSEL_GRAB_CONFIG.cruiseSpeed;
+        entity.setValue(VesselBody, 'vx', cruiseVx);
+        entity.setValue(VesselBody, 'vz', cruiseVz);
+      }
       entity.setValue(VesselBody, 'omega', 0);
     });
   }
