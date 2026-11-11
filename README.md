@@ -7,9 +7,9 @@
 
 Tactical 3D Harbor & Mooring Planner for Meta Quest. Built with Meta Immersive Web SDK (IWSDK).
 
-- **Live WebXR Demo**: https://tome-xr.vercel.app/
-- **Repository**: https://github.com/vero-code/tome-xr
-- **Competition Track**: Gaming / Productivity (Meta VR Start Developer Competition 2026)
+## Video Demonstration
+
+[![TomeXR Demo Video](https://img.youtube.com/vi/n80ZjGlS5jA/maxresdefault.jpg)](https://youtu.be/n80ZjGlS5jA)
 
 ## Overview
 
@@ -128,4 +128,4 @@ The output bundle is generated in the `dist/` directory.
 
 ## License
 
-[Apache-2.0](LICENSE)
+Created for the [Meta VR Start Developer Competition 2026](https://devpost.com/software/tomexr) and licensed under [Apache-2.0](LICENSE).
