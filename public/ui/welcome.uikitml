@@ -107,7 +107,7 @@
       <div class="scenario-mission">Goal: High drift. Deploy both tugs to stabilize heading!</div>
     </div>
     <div id="dock-success" class="success-banner" style="display: none">
-      <div class="success-text">✓ DOCKED SAFELY! MISSION COMPLETE</div>
+      <div class="success-text">DOCKED SAFELY! MISSION COMPLETE</div>
     </div>
   </div>
   <Button id="xr-button" class="button">

@@ -9,6 +9,14 @@ import { Tugboat } from '../entities/tugboat.component.js';
 import { VesselBody } from '../entities/vessel.component.js';
 import type { FilteredVector2 } from '../types/interaction.types.js';
 
+// Physical basin bounds for tugboats (table width 0.90m, basin inner width 0.84m, depth 0.60m)
+const TUG_BOUNDS = {
+  minX: -0.40,
+  maxX: 0.40,
+  minZ: -0.13,
+  maxZ: 0.25,
+};
+
 interface TugTracker {
   prevX: number;
   prevZ: number;
@@ -84,12 +92,12 @@ export class TugboatSystem extends createSystem({
         );
 
         const clampedX = Math.min(
-          BASIN_BOUNDS.maxX - 0.01,
-          Math.max(BASIN_BOUNDS.minX + 0.01, this.filtered.x),
+          TUG_BOUNDS.maxX,
+          Math.max(TUG_BOUNDS.minX, this.filtered.x),
         );
         const clampedZ = Math.min(
-          BASIN_BOUNDS.maxZ - 0.01,
-          Math.max(BASIN_BOUNDS.minZ + 0.01, this.filtered.z),
+          TUG_BOUNDS.maxZ,
+          Math.max(TUG_BOUNDS.minZ, this.filtered.z),
         );
 
         tugObj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, clampedZ);
@@ -125,12 +133,12 @@ export class TugboatSystem extends createSystem({
       if (!engaged) {
         // Keep idle tugboat bounded within the basin
         const idleX = Math.min(
-          BASIN_BOUNDS.maxX - 0.01,
-          Math.max(BASIN_BOUNDS.minX + 0.01, tugObj.position.x),
+          TUG_BOUNDS.maxX,
+          Math.max(TUG_BOUNDS.minX, tugObj.position.x),
         );
         const idleZ = Math.min(
-          BASIN_BOUNDS.maxZ - 0.01,
-          Math.max(BASIN_BOUNDS.minZ + 0.01, tugObj.position.z),
+          TUG_BOUNDS.maxZ,
+          Math.max(TUG_BOUNDS.minZ, tugObj.position.z),
         );
         tugObj.position.set(idleX, BASIN_BOUNDS.waterSurfaceY, idleZ);
         tugObj.rotation.set(0, 0, 0);
@@ -147,22 +155,35 @@ export class TugboatSystem extends createSystem({
         continue;
       }
 
-      // If engaged and released, keep moving with the vessel
+      // If engaged and released, keep moving with the vessel bounded strictly in basin
       if (!isGrabbed) {
-        const posX = attachX + offsetX;
-        const posZ = attachZ + offsetZ;
+        const posX = Math.min(
+          TUG_BOUNDS.maxX,
+          Math.max(TUG_BOUNDS.minX, attachX + offsetX),
+        );
+        const posZ = Math.min(
+          TUG_BOUNDS.maxZ,
+          Math.max(TUG_BOUNDS.minZ, attachZ + offsetZ),
+        );
         tugObj.position.set(posX, BASIN_BOUNDS.waterSurfaceY, posZ);
         tracker.prevX = posX;
         tracker.prevZ = posZ;
       }
 
-      const pullAngle = Math.atan2(-offsetZ, offsetX);
-      tugObj.rotation.set(0, pullAngle, 0);
-
       const activeDist = Math.hypot(
         tugObj.position.x - attachX,
         tugObj.position.z - attachZ,
       );
+
+      // Disengage if ship drifted too far from clamped tugboat
+      if (activeDist > TUG_CONFIG.engageRadius * 1.15) {
+        tugEntity.setValue(Tugboat, 'engaged', false);
+        this.updateVisualVector(towLine, thrustArrow, 0, false);
+        continue;
+      }
+
+      const pullAngle = Math.atan2(-offsetZ, offsetX);
+      tugObj.rotation.set(0, pullAngle, 0);
       this.updateVisualVector(towLine, thrustArrow, activeDist, true);
 
       const pullRatio = Math.min(
