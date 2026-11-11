@@ -40,6 +40,13 @@ const containerOrangeMaterial = createSceneMaterial({
   roughness: 0.6,
 });
 
+const vesselHitboxMaterial = createSceneMaterial({
+  id: 'tome-vessel-hitbox-mat',
+  model: 'basic',
+  baseColor: '#ffffff',
+  opacity: 0,
+});
+
 // Container vessel with tapered bow (+X), aft bridge (-X) and cargo stacks
 export function createCargoVessel(): Group {
   const {
@@ -143,5 +150,18 @@ export function createCargoVessel(): Group {
   }
 
   root.add(hull, deck, bridge, cargoGroup);
+
+  const hitbox = createScenePrimitiveObject(
+    {
+      geometry: {
+        type: 'box',
+        size: [length + 0.03, hullHeight + 0.03, beam + 0.03],
+      },
+    },
+    vesselHitboxMaterial,
+  );
+  hitbox.position.y = 0.02;
+  root.add(hitbox);
+
   return root;
 }

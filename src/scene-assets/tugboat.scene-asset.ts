@@ -25,6 +25,13 @@ const towLineMaterial = createSceneMaterial({
   baseColor: HARBOR_COLORS.towLine,
 });
 
+const hitboxMaterial = createSceneMaterial({
+  id: 'tome-tug-hitbox-mat',
+  model: 'basic',
+  baseColor: '#ffffff',
+  opacity: 0,
+});
+
 // Harbor tugboat with extensible towline (-X) and forward thrust arrow (+X)
 export function createTugboat(): Group {
   const root = new Group();
@@ -87,5 +94,18 @@ export function createTugboat(): Group {
   thrustArrow.position.set(0.032, 0.006, 0);
 
   root.add(hull, cabin, towLine, thrustArrow);
+
+  const hitbox = createScenePrimitiveObject(
+    {
+      geometry: {
+        type: 'box',
+        size: [0.09, 0.045, 0.06],
+      },
+    },
+    hitboxMaterial,
+  );
+  hitbox.position.y = 0.015;
+  root.add(hitbox);
+
   return root;
 }
