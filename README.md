@@ -1,45 +1,87 @@
-# IWSDK App
+# TomeXR
 
-This project uses `iwsdk.config.json` for declarative scene, asset, component,
-XR, and emulator configuration. Application systems remain explicit in
-`src/index.ts`.
+[![WebXR](https://img.shields.io/badge/WebXR-Meta_Quest-0081FB?logo=meta&logoColor=white)](https://tome-xr.vercel.app/)
+[![IWSDK](https://img.shields.io/badge/IWSDK-v1.1.0--rc.2-1877F2)](https://developers.meta.com/horizon/documentation/web/iwsdk-guide-project-setup)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
+
+Tactical 3D Harbor & Mooring Planner for Meta Quest. Built with Meta Immersive Web SDK (IWSDK).
+
+- **Live WebXR Demo**: https://tome-xr.vercel.app/
+- **Repository**: https://github.com/vero-code/tome-xr
+- **Competition Track**: Gaming / Productivity (Meta VR Start Developer Competition 2026)
+
+## Overview
+
+Mooring a 50,000–100,000 ton container ship is one of the most critical maritime maneuvers. Captains face massive 50–100 meter blind spots from the aft bridge, zero brake pedals, and immense hydrodynamic momentum where contact speeds must remain under 5–10 cm/s to avoid crushing pier structures.
+
+**TomeXR** functions as an interactive "360° parking assistant" for ship captains and navigators. Rendered as a seated tactical 3D tabletop diorama in WebXR, it enables hands-first rehearsal of docking approaches under varying winds, currents, and tug configurations before real-world execution.
+
+### Key Capabilities
+
+- **Hydrodynamic Physics Simulation**: Real-time 2D planar vessel physics calculating linear and angular momentum, hull drag, wind forces, and water currents.
+- **Predictive Drift Trajectory**: Forward projection arc displaying where the vessel will drift and rotate 30 seconds into the future based on active forces.
+- **Tugboat Assistance & Vectors**: Direct-grab tugboats with directional towlines that apply calibrated push and pull forces to vessel bow and stern stations.
+- **Laser Fender Guides**: Real-time laser distance lines measuring clearance and approach speeds between pier fenders and the ship hull.
+- **Impact Feedback System**: Color-coded contact detection (Green = safe touch under 5 cm/s, Yellow = caution, Red = critical impact velocity).
+- **Tactical Scenarios**:
+  1. *Calm Water*: Baseline manual mooring approach.
+  2. *Crosswind*: Offshore wind demanding bow tug counter-forces.
+  3. *Narrow Basin & Current*: Combined wind and current requiring coordinated dual-tug maneuvering.
+
+### Hands-First Design Principles
+
+- **Pinch & Drag**: Grab the cargo vessel to set heading and momentum; pull tugboats to position them and stretch towlines.
+- **Finger Poke**: Physical push-buttons to select scenarios and toggle simulation play/pause.
+- **Tracking Guard**: Smooth input filtering and anchor tracking to eliminate jitter and prevent abrupt jumps on occlusion.
+- **Airplane Seat Test**: Fully operable seated within a 60 cm sphere in front of the user without roomscale locomotion.
+
+## Tech Stack
+
+- **Framework**: Meta Immersive Web SDK (IWSDK v1.1.0-rc.2)
+- **Engine**: Three.js (via `@iwsdk/core`)
+- **Language**: TypeScript 5.5
+- **Bundler**: Vite 7
+- **UI**: IWSDK UIKitML / Horizon kit
+- **Target Platform**: Meta Quest (Meta Quest 3 / Pro / 3S via WebXR)
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js `>=20.19.0`
+- npm
+
+### Installation
 
 ```sh
 npm install
+```
+
+### Local Development
+
+Runs the local development server with the integrated Meta Quest IWER emulator:
+
+```sh
 npm run dev
 ```
 
-Use the Runtime and Editor controls in the managed browser to switch between
-the running experience and its authored scene.
+Open the reported local URL in Chromium to interact using mouse and emulated hands.
 
-## Starter content
+### Type Check
 
-The robot and welcome panel are small examples of authored scene content plus
-runtime systems. The robot turns toward the player's head and plays a sound
-when pressed. To remove the robot, delete its scene node, its `RobotSystem`
-registration from `src/index.ts` or `src/index.js`, and its `Robot` registration
-from `src/components.ts` or `src/components.js`; you can then delete the unused
-robot component and system files. To remove the welcome panel, delete its scene
-node and its `PanelSystem` registration from the application entry point.
+```sh
+npm run typecheck
+```
 
-The robot stands on the second of three numbered stations. The first holds dark
-pieces you can grab and move, and the third holds a ring you can spin in place.
-The studio props (the plinths and the dark pieces, plus the floor and stage in VR
-and Desktop 3D) are built in code in `src/scene-assets/studio.scene-asset.ts` or
-`.js`. The VR and Desktop 3D background furniture is built the same way in
-`src/scene-assets/decor.scene-asset.ts` or `.js`, so the starter downloads no
-extra models. To remove any of them, delete their scene nodes and their entries
-in `src/assets.ts` or `src/assets.js`, then delete the files you no longer use.
-The station labels are `public/ui/label-*.uikitml`.
+### Production Build
 
-The rest of the look is built-in components in the scene, which you can edit in
-the editor without code. The soft light on every object is the scene root's
-`IBLGradient` (select the Level Root to edit it), and the soft shadows under
-each object are `ContactShadow` nodes. In VR and Desktop 3D, the sky is the
-scene root's `DomeGradient` (its colors, tilt and dither are also on the Level
-Root), and the floor fades into it through the `DomeFade` on the floor node. AR
-projects have no sky or floor, so passthrough stays visible, and a
-`ShadowCatcher` node grounds the stations.
+```sh
+npm run build
+```
 
-- Minimal scene walkthrough: https://iwsdk.dev/guides/01b-minimal-scene.html
-- XR-enabled projects — IWER emulator controls: https://iwsdk.dev/guides/02-testing-experience.html#iwer-controls
+The output bundle is generated in the `dist/` directory.
+
+## License
+
+[Apache-2.0](LICENSE)
