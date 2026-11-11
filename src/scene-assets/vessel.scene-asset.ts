@@ -150,18 +150,5 @@ export function createCargoVessel(): Group {
   }
 
   root.add(hull, deck, bridge, cargoGroup);
-
-  const hitbox = createScenePrimitiveObject(
-    {
-      geometry: {
-        type: 'box',
-        size: [length + 0.03, hullHeight + 0.03, beam + 0.03],
-      },
-    },
-    vesselHitboxMaterial,
-  );
-  hitbox.position.y = 0.02;
-  root.add(hitbox);
-
   return root;
 }

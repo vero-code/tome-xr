@@ -13,11 +13,11 @@ export const VESSEL_GRAB_CONFIG: VesselGrabConfig = {
 export const TUG_CONFIG: TugConfig = {
   bowStationOffset: 0.075,
   sternStationOffset: -0.075,
-  engageRadius: 0.16,
-  minPullDistance: 0.032,
-  maxPullDistance: 0.13,
-  maxThrustForce: 0.015,
-  torqueScale: 1.8,
+  engageRadius: 0.18,
+  minPullDistance: 0.05,
+  maxPullDistance: 0.16,
+  maxThrustForce: 0.075,
+  torqueScale: 2.5,
 };
 
 export const WEATHER_DIAL_CONFIG: WeatherDialConfig = {
