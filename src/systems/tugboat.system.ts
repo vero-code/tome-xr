@@ -9,11 +9,18 @@ import { Tugboat } from '../entities/tugboat.component.js';
 import { VesselBody } from '../entities/vessel.component.js';
 import type { FilteredVector2 } from '../types/interaction.types.js';
 
+interface TugTracker {
+  prevX: number;
+  prevZ: number;
+  isHeld: boolean;
+}
+
 export class TugboatSystem extends createSystem({
   tugs: { required: [Tugboat] },
   vessels: { required: [VesselBody] },
 }) {
   private filtered: FilteredVector2 = { x: 0, z: 0, valid: true };
+  private trackers = new Map<Entity, TugTracker>();
 
   update(): void {
     const vesselEntity = this.getPrimaryVessel();
@@ -38,6 +45,16 @@ export class TugboatSystem extends createSystem({
         continue;
       }
 
+      let tracker = this.trackers.get(tugEntity);
+      if (tracker == null) {
+        tracker = {
+          prevX: tugObj.position.x,
+          prevZ: tugObj.position.z,
+          isHeld: false,
+        };
+        this.trackers.set(tugEntity, tracker);
+      }
+
       const stationOffset =
         tugEntity.getValue(Tugboat, 'stationOffset') ??
         TUG_CONFIG.bowStationOffset;
@@ -50,58 +67,76 @@ export class TugboatSystem extends createSystem({
       let offsetZ = tugEntity.getValue(Tugboat, 'offsetZ') ?? -0.06;
 
       if (isGrabbed) {
-        const prevTargetX = attachX + offsetX;
-        const prevTargetZ = attachZ + offsetZ;
+        // Reset anchor point on initial grab
+        if (!tracker.isHeld) {
+          tracker.prevX = tugObj.position.x;
+          tracker.prevZ = tugObj.position.z;
+          tracker.isHeld = true;
+        }
 
         TrackingGuard.filter(
           tugObj.position.x,
           tugObj.position.z,
-          prevTargetX,
-          prevTargetZ,
+          tracker.prevX,
+          tracker.prevZ,
           TRACKING_GUARD_CONFIG,
           this.filtered,
         );
 
         const clampedX = Math.min(
-          BASIN_BOUNDS.maxX,
-          Math.max(BASIN_BOUNDS.minX, this.filtered.x),
+          BASIN_BOUNDS.maxX - 0.01,
+          Math.max(BASIN_BOUNDS.minX + 0.01, this.filtered.x),
         );
         const clampedZ = Math.min(
-          BASIN_BOUNDS.maxZ,
-          Math.max(BASIN_BOUNDS.minZ, this.filtered.z),
+          BASIN_BOUNDS.maxZ - 0.01,
+          Math.max(BASIN_BOUNDS.minZ + 0.01, this.filtered.z),
         );
+
         tugObj.position.set(clampedX, BASIN_BOUNDS.waterSurfaceY, clampedZ);
+        tracker.prevX = clampedX;
+        tracker.prevZ = clampedZ;
 
-        if (this.filtered.valid) {
-          const rawDx = clampedX - attachX;
-          const rawDz = clampedZ - attachZ;
-          const rawDist = Math.hypot(rawDx, rawDz);
+        const rawDx = clampedX - attachX;
+        const rawDz = clampedZ - attachZ;
+        const rawDist = Math.hypot(rawDx, rawDz);
 
-          if (rawDist <= TUG_CONFIG.engageRadius && rawDist > 0.005) {
-            engaged = true;
-            const clampedDist = Math.min(
-              TUG_CONFIG.maxPullDistance,
-              Math.max(TUG_CONFIG.minPullDistance, rawDist),
-            );
-            offsetX = (rawDx / rawDist) * clampedDist;
-            offsetZ = (rawDz / rawDist) * clampedDist;
-            tugEntity.setValue(Tugboat, 'engaged', true);
-            tugEntity.setValue(Tugboat, 'offsetX', offsetX);
-            tugEntity.setValue(Tugboat, 'offsetZ', offsetZ);
-          } else {
-            engaged = false;
-            tugEntity.setValue(Tugboat, 'engaged', false);
-          }
+        if (rawDist <= TUG_CONFIG.engageRadius && rawDist > 0.005) {
+          engaged = true;
+          const clampedDist = Math.min(
+            TUG_CONFIG.maxPullDistance,
+            Math.max(TUG_CONFIG.minPullDistance, rawDist),
+          );
+          offsetX = (rawDx / rawDist) * clampedDist;
+          offsetZ = (rawDz / rawDist) * clampedDist;
+          tugEntity.setValue(Tugboat, 'engaged', true);
+          tugEntity.setValue(Tugboat, 'offsetX', offsetX);
+          tugEntity.setValue(Tugboat, 'offsetZ', offsetZ);
+        } else {
+          engaged = false;
+          tugEntity.setValue(Tugboat, 'engaged', false);
         }
+      } else {
+        tracker.isHeld = false;
       }
 
       const towLine = tugObj.getObjectByName('TowLine');
       const thrustArrow = tugObj.getObjectByName('ThrustArrow');
 
       if (!engaged) {
-        tugObj.position.y = BASIN_BOUNDS.waterSurfaceY;
-        tugObj.rotation.x = 0;
-        tugObj.rotation.z = 0;
+        // Keep idle tugboat bounded within the basin
+        const idleX = Math.min(
+          BASIN_BOUNDS.maxX - 0.01,
+          Math.max(BASIN_BOUNDS.minX + 0.01, tugObj.position.x),
+        );
+        const idleZ = Math.min(
+          BASIN_BOUNDS.maxZ - 0.01,
+          Math.max(BASIN_BOUNDS.minZ + 0.01, tugObj.position.z),
+        );
+        tugObj.position.set(idleX, BASIN_BOUNDS.waterSurfaceY, idleZ);
+        tugObj.rotation.set(0, 0, 0);
+        tracker.prevX = idleX;
+        tracker.prevZ = idleZ;
+
         this.updateVisualVector(towLine, thrustArrow, 0, false);
         continue;
       }
@@ -112,12 +147,13 @@ export class TugboatSystem extends createSystem({
         continue;
       }
 
+      // If engaged and released, keep moving with the vessel
       if (!isGrabbed) {
-        tugObj.position.set(
-          attachX + offsetX,
-          BASIN_BOUNDS.waterSurfaceY,
-          attachZ + offsetZ,
-        );
+        const posX = attachX + offsetX;
+        const posZ = attachZ + offsetZ;
+        tugObj.position.set(posX, BASIN_BOUNDS.waterSurfaceY, posZ);
+        tracker.prevX = posX;
+        tracker.prevZ = posZ;
       }
 
       const pullAngle = Math.atan2(-offsetZ, offsetX);
