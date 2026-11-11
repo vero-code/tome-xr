@@ -36,6 +36,17 @@ Mooring a 50,000–100,000 ton container ship is one of the most critical mariti
 - **Tracking Guard**: Smooth input filtering and anchor tracking to eliminate jitter and prevent abrupt jumps on occlusion.
 - **Airplane Seat Test**: Fully operable seated within a 60 cm sphere in front of the user without roomscale locomotion.
 
+### Meta VR Start 2026 Competition Alignment
+
+| Competition Guideline / Test | How TomeXR Delivers |
+| :--- | :--- |
+| **Track & Division** | **Gaming** (Seated Tactical Physics Puzzle) · **New Experience** (Built from scratch within the competition window) |
+| **Hands-First Test** | 100% playable end-to-end without controllers — from scenario selection (`Poke`) to hull placement, tugboat towline vectoring, and compass rotation (`Pinch & Drag`). |
+| **The "Airplane Seat Test"** | Seated-optimized within a 60 cm (2 ft) stationary reach sphere. Zero roomscale locomotion or sweeping arm movements required. |
+| **The "One Bus Stop Test"** | Fast WebXR cold start, instant physical pause/resume button, and self-contained tactical scenarios completable in 2–5 minutes. |
+| **The "Take It Away Test"** | 100% original custom planar hydrodynamics engine, procedural 3D scene assets, and vector physics built natively on `@iwsdk/core` — zero external AI/API wrappers. |
+| **FoV-Aware & 60+ FPS** | All tactical UI, status banners, and tabletop controls are angled within a compact, comfortable field of view and use lightweight procedural geometry for locked 60+ FPS on Meta Quest 3/3S. |
+
 ## Tech Stack
 
 - **Framework**: Meta Immersive Web SDK (IWSDK v1.1.0-rc.2)
